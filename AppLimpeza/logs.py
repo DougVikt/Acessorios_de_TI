@@ -18,10 +18,9 @@ def register_logs(content_log:str):
                 # escreve a data e hora de criação do arquivo
                 file.write(f"file creation date :{date_create}")
         elif not os.path.exists(file_log):
-            print("indo")
             # abre o arquivo de log e escreve 
             with open('logs.txt', 'a') as file:
                 # escreve o conteúdo do log
-                file.write(f"\nLOG-{date_create}: {content_log}")
+                file.write(f"\n>LOG-{date_create}: {content_log}")
     except Exception as e:
         print(f'Error to write log : {e}')
