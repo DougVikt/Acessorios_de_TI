@@ -3,6 +3,7 @@ import tkinter as ttk
 import time
 from delete_temp import delete_Temp
 from window import window_main
+from disk_clear import disk_clear
 
 
 
@@ -14,7 +15,11 @@ if __name__ == "__main__":
      # fecha a pasta Temp
     for window in gw.getWindowsWithTitle('Temp'):
         window.close()  
-    window_main(ttk,"TUDO LIMPO", close=True)
+    open=disk_clear()
+    print(open)
+    if open:
+        time.sleep(5)
+        window_main(ttk,"TUDO LIMPO", close=True)
    
     
      

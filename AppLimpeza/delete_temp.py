@@ -33,4 +33,4 @@ def delete_Temp():
         except Exception as e:
                     register_logs(f'\nErro ao deletar o arquivo {filepath} : {e}')
         
-        time.sleep(1)
+        time.sleep(0.3)
