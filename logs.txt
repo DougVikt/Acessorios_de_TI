@@ -1,117 +1,19 @@
 
-LOG-02/02/2025 01:06:15: 
-Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp\.net deletado com sucesso
-LOG-02/02/2025 01:06:15: 
-Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp\.ses deletado com sucesso
-LOG-02/02/2025 01:06:15: 
-Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp\016fc971-8c52-466b-a6d2-14406b4961f0 deletado com sucesso
-LOG-02/02/2025 01:06:15: 
-Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp\09b68047-9991-4ba4-b29b-98b2b86849c8 deletado com sucesso
-LOG-02/02/2025 01:06:15: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\33073788-bfd8-46b6-a33f-778fd406a178.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\33073788-bfd8-46b6-a33f-778fd406a178.tmp'
-LOG-02/02/2025 01:08:21: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\1238c809-7190-44f1-9c5d-b1f6fe2c2286.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\1238c809-7190-44f1-9c5d-b1f6fe2c2286.tmp'
-LOG-02/02/2025 01:09:39: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\1238c809-7190-44f1-9c5d-b1f6fe2c2286.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\1238c809-7190-44f1-9c5d-b1f6fe2c2286.tmp'
-LOG-02/02/2025 01:13:40: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\33073788-bfd8-46b6-a33f-778fd406a178.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\33073788-bfd8-46b6-a33f-778fd406a178.tmp'
-LOG-02/02/2025 01:14:16: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\33073788-bfd8-46b6-a33f-778fd406a178.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\33073788-bfd8-46b6-a33f-778fd406a178.tmp'
-LOG-02/02/2025 01:17:37: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\09911656-e48b-46d3-86f1-d9d665f3093a.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\09911656-e48b-46d3-86f1-d9d665f3093a.tmp'
-LOG-02/02/2025 01:17:37: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\33073788-bfd8-46b6-a33f-778fd406a178.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\33073788-bfd8-46b6-a33f-778fd406a178.tmp'
-LOG-02/02/2025 01:17:37: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\37b2e876-f57c-481a-b1b2-acf6c9e5215a.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\37b2e876-f57c-481a-b1b2-acf6c9e5215a.tmp'
-LOG-02/02/2025 01:17:37: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\7185c306-fc9e-408c-bbb7-889b140679b2.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\7185c306-fc9e-408c-bbb7-889b140679b2.tmp'
-LOG-02/02/2025 01:17:37: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\851c30a0-0e31-4d18-9343-1dfa542e738d.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\851c30a0-0e31-4d18-9343-1dfa542e738d.tmp'
-LOG-02/02/2025 01:17:37: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\ALSysIO64.sys : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp\\ALSysIO64.sys'
-LOG-02/02/2025 01:17:37: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\b8614388-8f2a-4399-8f2e-9108d3a23007.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\b8614388-8f2a-4399-8f2e-9108d3a23007.tmp'
-LOG-02/02/2025 01:17:37: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\d1a8692c-eccd-4c5a-bf99-552f11294465.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\d1a8692c-eccd-4c5a-bf99-552f11294465.tmp'
-LOG-02/02/2025 01:17:37: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\EA Games : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp\\EA Games\\Ultima Online Stygian Abyss\\User Data'
-LOG-02/02/2025 01:17:37: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\eecb9371-3145-4123-8809-3ee28b962c55.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\eecb9371-3145-4123-8809-3ee28b962c55.tmp'
-LOG-02/02/2025 01:17:37: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\Minhas fontes de dados : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp\\Minhas fontes de dados'
-LOG-02/02/2025 01:17:37: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\Modelos Personalizados do Office : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp\\Modelos Personalizados do Office'
-LOG-02/02/2025 01:17:37: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\NLTmpMnt : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp\\NLTmpMnt\\$Recycle.Bin'
-LOG-02/02/2025 01:17:37: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\NLTmpMnt (1) : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp\\NLTmpMnt (1)\\Program Files\\Common Files\\Microsoft Shared\\ink\\fsdefinitions\\auxpad\\auxbase.xml'
-LOG-02/02/2025 01:17:37: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\NLTmpMnt (2) : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp\\NLTmpMnt (2)\\Program Files\\Common Files\\Microsoft Shared\\ink\\fsdefinitions\\auxpad\\auxbase.xml'
-LOG-02/02/2025 01:24:45: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\33073788-bfd8-46b6-a33f-778fd406a178.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\33073788-bfd8-46b6-a33f-778fd406a178.tmp'
-LOG-02/02/2025 01:24:45: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\851c30a0-0e31-4d18-9343-1dfa542e738d.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\851c30a0-0e31-4d18-9343-1dfa542e738d.tmp'
-LOG-02/02/2025 01:24:45: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\ALSysIO64.sys : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp\\ALSysIO64.sys'
-LOG-02/02/2025 01:24:45: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\b8614388-8f2a-4399-8f2e-9108d3a23007.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\b8614388-8f2a-4399-8f2e-9108d3a23007.tmp'
-LOG-02/02/2025 01:24:45: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\d1a8692c-eccd-4c5a-bf99-552f11294465.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\d1a8692c-eccd-4c5a-bf99-552f11294465.tmp'
-LOG-02/02/2025 01:24:45: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\EA Games : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp\\EA Games\\Ultima Online Stygian Abyss\\User Data'
-LOG-02/02/2025 01:24:45: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\eecb9371-3145-4123-8809-3ee28b962c55.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\eecb9371-3145-4123-8809-3ee28b962c55.tmp'
-LOG-02/02/2025 01:24:45: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\fc6179df-2fe1-4a8a-89af-a9b17248613b.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp\\fc6179df-2fe1-4a8a-89af-a9b17248613b.tmp'
-LOG-02/02/2025 01:24:45: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\Minhas fontes de dados : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp\\Minhas fontes de dados'
-LOG-02/02/2025 01:24:45: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\Modelos Personalizados do Office : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp\\Modelos Personalizados do Office'
-LOG-02/02/2025 01:24:45: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\NLTmpMnt : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp\\NLTmpMnt\\$Recycle.Bin'
-LOG-02/02/2025 01:24:45: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\NLTmpMnt (1) : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp\\NLTmpMnt (1)\\Program Files\\Common Files\\Microsoft Shared\\ink\\fsdefinitions\\auxpad\\auxbase.xml'
-LOG-02/02/2025 01:24:45: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp\NLTmpMnt (2) : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp\\NLTmpMnt (2)\\Program Files\\Common Files\\Microsoft Shared\\ink\\fsdefinitions\\auxpad\\auxbase.xml'
-LOG-02/02/2025 01:26:47: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/33073788-bfd8-46b6-a33f-778fd406a178.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/33073788-bfd8-46b6-a33f-778fd406a178.tmp'
-LOG-02/02/2025 01:26:47: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/851c30a0-0e31-4d18-9343-1dfa542e738d.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/851c30a0-0e31-4d18-9343-1dfa542e738d.tmp'
-LOG-02/02/2025 01:26:47: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/ALSysIO64.sys : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/ALSysIO64.sys'
-LOG-02/02/2025 01:26:47: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/b8614388-8f2a-4399-8f2e-9108d3a23007.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/b8614388-8f2a-4399-8f2e-9108d3a23007.tmp'
-LOG-02/02/2025 01:26:47: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/d1a8692c-eccd-4c5a-bf99-552f11294465.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/d1a8692c-eccd-4c5a-bf99-552f11294465.tmp'
-LOG-02/02/2025 01:26:47: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/EA Games : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/EA Games\\Ultima Online Stygian Abyss\\User Data'
-LOG-02/02/2025 01:26:47: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/eecb9371-3145-4123-8809-3ee28b962c55.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/eecb9371-3145-4123-8809-3ee28b962c55.tmp'
-LOG-02/02/2025 01:26:47: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/fc6179df-2fe1-4a8a-89af-a9b17248613b.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/fc6179df-2fe1-4a8a-89af-a9b17248613b.tmp'
-LOG-02/02/2025 01:26:47: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/Minhas fontes de dados : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/Minhas fontes de dados'
-LOG-02/02/2025 01:26:47: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/Modelos Personalizados do Office : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/Modelos Personalizados do Office'
-LOG-02/02/2025 01:26:47: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt\\$Recycle.Bin'
-LOG-02/02/2025 01:26:47: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (1) : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (1)\\Program Files\\Common Files\\Microsoft Shared\\ink\\fsdefinitions\\auxpad\\auxbase.xml'
-LOG-02/02/2025 01:26:47: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (2) : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (2)\\Program Files\\Common Files\\Microsoft Shared\\ink\\fsdefinitions\\auxpad\\auxbase.xml'
-LOG-02/02/2025 01:39:16: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/33073788-bfd8-46b6-a33f-778fd406a178.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/33073788-bfd8-46b6-a33f-778fd406a178.tmp'
-LOG-02/02/2025 01:39:16: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/851c30a0-0e31-4d18-9343-1dfa542e738d.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/851c30a0-0e31-4d18-9343-1dfa542e738d.tmp'
-LOG-02/02/2025 01:39:16: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/ALSysIO64.sys : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/ALSysIO64.sys'
-LOG-02/02/2025 01:39:16: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/b63b9d8f-3099-4ad6-92e6-4b5e2a9c94d9.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/b63b9d8f-3099-4ad6-92e6-4b5e2a9c94d9.tmp'
-LOG-02/02/2025 01:39:16: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/b8614388-8f2a-4399-8f2e-9108d3a23007.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/b8614388-8f2a-4399-8f2e-9108d3a23007.tmp'
-LOG-02/02/2025 01:39:16: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/d1a8692c-eccd-4c5a-bf99-552f11294465.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/d1a8692c-eccd-4c5a-bf99-552f11294465.tmp'
-LOG-02/02/2025 01:39:16: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/EA Games : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/EA Games\\Ultima Online Stygian Abyss\\User Data'
-LOG-02/02/2025 01:39:16: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/eecb9371-3145-4123-8809-3ee28b962c55.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/eecb9371-3145-4123-8809-3ee28b962c55.tmp'
-LOG-02/02/2025 01:39:16: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/Minhas fontes de dados : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/Minhas fontes de dados'
-LOG-02/02/2025 01:39:16: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/Modelos Personalizados do Office : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/Modelos Personalizados do Office'
-LOG-02/02/2025 01:39:16: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt\\$Recycle.Bin'
-LOG-02/02/2025 01:39:16: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (1) : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (1)\\Program Files\\Common Files\\Microsoft Shared\\ink\\fsdefinitions\\auxpad\\auxbase.xml'
-LOG-02/02/2025 01:39:16: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (2) : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (2)\\Program Files\\Common Files\\Microsoft Shared\\ink\\fsdefinitions\\auxpad\\auxbase.xml'
-LOG-02/02/2025 01:39:16: 
-Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/SoftwareUpdate_Temp deletado com sucesso
-LOG-02/02/2025 01:40:35: Erro de permissao ao deletar o arquivo, uso do modo de atalho de tecla 
-LOG-02/02/2025 01:40:36: Erro de permissao ao deletar o arquivo, uso do modo de atalho de tecla 
-LOG-02/02/2025 01:40:38: Erro de permissao ao deletar o arquivo, uso do modo de atalho de tecla 
-LOG-02/02/2025 01:40:39: Erro de permissao ao deletar o arquivo, uso do modo de atalho de tecla 
-LOG-02/02/2025 01:40:40: Erro de permissao ao deletar o arquivo, uso do modo de atalho de tecla 
-LOG-02/02/2025 01:40:41: Erro de permissao ao deletar o arquivo, uso do modo de atalho de tecla 
-LOG-02/02/2025 01:40:42: Erro de permissao ao deletar o arquivo, uso do modo de atalho de tecla 
-LOG-02/02/2025 01:40:44: Erro de permissao ao deletar o arquivo, uso do modo de atalho de tecla 
-LOG-02/02/2025 01:40:45: Erro de permissao ao deletar o arquivo, uso do modo de atalho de tecla 
-LOG-02/02/2025 01:40:46: Erro de permissao ao deletar o arquivo, uso do modo de atalho de tecla 
-LOG-02/02/2025 01:40:47: Erro de permissao ao deletar o arquivo, uso do modo de atalho de tecla 
-LOG-02/02/2025 01:40:49: Erro de permissao ao deletar o arquivo, uso do modo de atalho de tecla 
-LOG-02/02/2025 01:40:50: Erro de permissao ao deletar o arquivo, uso do modo de atalho de tecla 
-LOG-02/02/2025 01:42:50: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/33073788-bfd8-46b6-a33f-778fd406a178.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/33073788-bfd8-46b6-a33f-778fd406a178.tmp'
-LOG-02/02/2025 01:42:50: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/851c30a0-0e31-4d18-9343-1dfa542e738d.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/851c30a0-0e31-4d18-9343-1dfa542e738d.tmp'
-LOG-02/02/2025 01:42:50: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/ALSysIO64.sys : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/ALSysIO64.sys'
-LOG-02/02/2025 01:42:50: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/b63b9d8f-3099-4ad6-92e6-4b5e2a9c94d9.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/b63b9d8f-3099-4ad6-92e6-4b5e2a9c94d9.tmp'
-LOG-02/02/2025 01:42:50: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/b8614388-8f2a-4399-8f2e-9108d3a23007.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/b8614388-8f2a-4399-8f2e-9108d3a23007.tmp'
-LOG-02/02/2025 01:42:50: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/babcf40b-8e3e-4a6b-84b2-af8df78f8e84.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/babcf40b-8e3e-4a6b-84b2-af8df78f8e84.tmp'
-LOG-02/02/2025 01:42:50: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/d1a8692c-eccd-4c5a-bf99-552f11294465.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/d1a8692c-eccd-4c5a-bf99-552f11294465.tmp'
-LOG-02/02/2025 01:42:50: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/d59e5394-5a0a-49c8-a87b-51c207341423.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/d59e5394-5a0a-49c8-a87b-51c207341423.tmp'
-LOG-02/02/2025 01:42:50: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/eecb9371-3145-4123-8809-3ee28b962c55.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/eecb9371-3145-4123-8809-3ee28b962c55.tmp'
-LOG-02/02/2025 01:42:50: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt\\$Recycle.Bin'
-LOG-02/02/2025 01:42:50: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (1) : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (1)\\Program Files\\Common Files\\Microsoft Shared\\ink\\fsdefinitions\\auxpad\\auxbase.xml'
-LOG-02/02/2025 01:42:50: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (2) : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (2)\\Program Files\\Common Files\\Microsoft Shared\\ink\\fsdefinitions\\auxpad\\auxbase.xml'
-LOG-02/02/2025 18:42:45: 
-Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/.ses deletado com sucesso
-LOG-02/02/2025 18:42:46: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/a94d59c6-0f97-4b80-b63f-1a2ad6772c0c.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/a94d59c6-0f97-4b80-b63f-1a2ad6772c0c.tmp'
-LOG-02/02/2025 18:42:47: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/ALSysIO64.sys : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/ALSysIO64.sys'
-LOG-02/02/2025 18:42:48: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/CE3C83C0-64EA-47F2-8824-C697947D32A6 : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/CE3C83C0-64EA-47F2-8824-C697947D32A6\\AppxProvider.dll'
-LOG-02/02/2025 18:42:49: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt\\$Recycle.Bin'
-LOG-02/02/2025 18:42:50: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (1) : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (1)\\Program Files\\Common Files\\Microsoft Shared\\ink\\fsdefinitions\\auxpad\\auxbase.xml'
-LOG-02/02/2025 18:42:51: Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (2) : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (2)\\Program Files\\Common Files\\Microsoft Shared\\ink\\fsdefinitions\\auxpad\\auxbase.xml'
-LOG-02/02/2025 18:42:52: 
-Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/pyright-12720-KfkPezBeiFlk deletado com sucesso
-LOG-02/02/2025 18:42:53: 
-Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/pyright-12720-MArqHzI7jogL deletado com sucesso
-LOG-02/02/2025 18:42:54: 
-Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/pyright-12720-tVHVlcaux0AQ deletado com sucesso
-LOG-02/02/2025 18:42:55: 
-Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/python-languageserver-cancellation deletado com sucesso
-LOG-02/02/2025 18:42:56: 
-Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/system-commandline-sentinel-files deletado com sucesso
-LOG-02/02/2025 18:42:57: 
-Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/wctAA7.tmp deletado com sucesso
-LOG-02/02/2025 18:42:58: 
-Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/_avg_ deletado com sucesso
+>LOG-06/02/2025 14:59:04: 
+Erro ao deletar o arquivo c:/Users/Administrador/AppData/Local/Temp/1 : [WinError 32] O arquivo já está sendo usado por outro processo: 'c:/Users/Administrador/AppData/Local/Temp/1\\0a0de93c-ce4b-49f1-af55-e6a6f9418106.tmp'
+>LOG-06/02/2025 15:02:08: 
+Erro ao deletar o arquivo c:/Users/Administrador/AppData/Local/Temp/1 : [WinError 32] O arquivo já está sendo usado por outro processo: 'c:/Users/Administrador/AppData/Local/Temp/1\\0a0de93c-ce4b-49f1-af55-e6a6f9418106.tmp'
+>LOG-06/02/2025 15:02:50: 
+Erro ao deletar o arquivo c:/Users/Administrador/AppData/Local/Temp/1 : [WinError 32] O arquivo já está sendo usado por outro processo: 'c:/Users/Administrador/AppData/Local/Temp/1\\0a0de93c-ce4b-49f1-af55-e6a6f9418106.tmp'
+>LOG-06/02/2025 15:03:23: 
+Erro ao deletar o arquivo c:/Users/Administrador/AppData/Local/Temp/1 : [WinError 32] O arquivo já está sendo usado por outro processo: 'c:/Users/Administrador/AppData/Local/Temp/1\\0a0de93c-ce4b-49f1-af55-e6a6f9418106.tmp'
+>LOG-06/02/2025 15:04:13: 
+Erro ao deletar o arquivo c:/Users/Administrador/AppData/Local/Temp/1 : [WinError 32] O arquivo já está sendo usado por outro processo: 'c:/Users/Administrador/AppData/Local/Temp/1\\0a0de93c-ce4b-49f1-af55-e6a6f9418106.tmp'
+>LOG-06/02/2025 15:04:14: 
+Arquivo-pasta c:/Users/Administrador/AppData/Local/Temp/{61760081-5FC9-4983-AA3A-8ECEB5113FDE} - OProcSessId.dat deletado com sucesso
+>LOG-06/02/2025 15:04:39: 
+Erro ao deletar o arquivo c:/Users/Administrador/AppData/Local/Temp/1 : [WinError 32] O arquivo já está sendo usado por outro processo: 'c:/Users/Administrador/AppData/Local/Temp/1\\0a0de93c-ce4b-49f1-af55-e6a6f9418106.tmp'
+>LOG-06/02/2025 15:05:49: 
+Erro ao deletar o arquivo c:/Users/Administrador/AppData/Local/Temp/1 : [WinError 32] O arquivo já está sendo usado por outro processo: 'c:/Users/Administrador/AppData/Local/Temp/1\\0a0de93c-ce4b-49f1-af55-e6a6f9418106.tmp'
+>LOG-06/02/2025 15:09:31: 
+Erro ao deletar o arquivo c:/Users/Administrador/AppData/Local/Temp/1 : [WinError 32] O arquivo já está sendo usado por outro processo: 'c:/Users/Administrador/AppData/Local/Temp/1\\0a0de93c-ce4b-49f1-af55-e6a6f9418106.tmp'

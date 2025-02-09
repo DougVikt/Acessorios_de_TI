@@ -1,5 +1,4 @@
 import os 
-import pyautogui as gui
 import shutil
 import time
 from logs import register_logs
