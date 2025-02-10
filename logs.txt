@@ -1,0 +1,3 @@
+
+>LOG-10/02/2025 10:25:24: 
+Erro ao deletar o arquivo c:/Users/Administrador/AppData/Local/Temp/1 : [WinError 32] O arquivo já está sendo usado por outro processo: 'c:/Users/Administrador/AppData/Local/Temp/1\\0a0de93c-ce4b-49f1-af55-e6a6f9418106.tmp'

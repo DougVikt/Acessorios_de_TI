@@ -1,0 +1,5 @@
+
+>LOG-10/02/2025 10:29:42: 
+Erro ao deletar o arquivo C:/Users/Administrador/AppData/Local/Temp/1 : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/Administrador/AppData/Local/Temp/1\\0a0de93c-ce4b-49f1-af55-e6a6f9418106.tmp'
+>LOG-10/02/2025 10:29:42: 
+Erro ao deletar o arquivo C:/Users/Administrador/AppData/Local/Temp/_MEI38162 : [WinError 5] Acesso negado: 'C:/Users/Administrador/AppData/Local/Temp/_MEI38162\\libffi-8.dll'
