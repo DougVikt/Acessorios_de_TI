@@ -16,9 +16,8 @@ if __name__ == "__main__":
     for window in gw.getWindowsWithTitle('Temp'):
         window.close()  
     open=disk_clear()
-    print(open)
     if open:
-        time.sleep(5)
+        time.sleep(10)
         window_main(ttk,"TUDO LIMPO", close=True)
    
     
