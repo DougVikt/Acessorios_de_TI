@@ -3,3 +3,85 @@
 Erro ao deletar o arquivo C:/Users/Administrador/AppData/Local/Temp/1 : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/Administrador/AppData/Local/Temp/1\\0a0de93c-ce4b-49f1-af55-e6a6f9418106.tmp'
 >LOG-10/02/2025 10:29:42: 
 Erro ao deletar o arquivo C:/Users/Administrador/AppData/Local/Temp/_MEI38162 : [WinError 5] Acesso negado: 'C:/Users/Administrador/AppData/Local/Temp/_MEI38162\\libffi-8.dll'
+>LOG-16/02/2025 18:31:37: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/.ses deletado com sucesso
+>LOG-16/02/2025 18:31:45: 
+Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/008103ef-5839-4d1b-802d-fe0dbb3d9c68.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/008103ef-5839-4d1b-802d-fe0dbb3d9c68.tmp'
+>LOG-16/02/2025 18:31:45: 
+Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/0a5e394a-def0-42c7-8b3e-304f79ad53ec.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/0a5e394a-def0-42c7-8b3e-304f79ad53ec.tmp'
+>LOG-16/02/2025 18:31:45: 
+Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/1706fe88-0841-4341-a7c4-5b9939d84512.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/1706fe88-0841-4341-a7c4-5b9939d84512.tmp'
+>LOG-16/02/2025 18:31:46: 
+Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/2b787f18-b963-43f5-af4f-ffdb86242843.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/2b787f18-b963-43f5-af4f-ffdb86242843.tmp'
+>LOG-16/02/2025 18:31:46: 
+Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/2f34618a-b5d1-4fce-9370-6f1b09cf4b3b.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/2f34618a-b5d1-4fce-9370-6f1b09cf4b3b.tmp'
+>LOG-16/02/2025 18:31:46: 
+Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/86F63033-F67B-465A-A686-9CF3311108BF : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/86F63033-F67B-465A-A686-9CF3311108BF\\AppxProvider.dll'
+>LOG-16/02/2025 18:31:47: 
+Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/ALSysIO64.sys : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/ALSysIO64.sys'
+>LOG-16/02/2025 18:31:47: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/arc deletado com sucesso
+>LOG-16/02/2025 18:31:47: 
+Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/c4a8c62c-8aab-4492-806c-9b81b87e8a06.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/c4a8c62c-8aab-4492-806c-9b81b87e8a06.tmp'
+>LOG-16/02/2025 18:31:48: 
+Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/c8e87e7c-a670-49f4-9380-187370049df2.tmp : [WinError 32] O arquivo já está sendo usado por outro processo: 'C:/Users/DOUG/AppData/Local/Temp/c8e87e7c-a670-49f4-9380-187370049df2.tmp'
+>LOG-16/02/2025 18:31:48: 
+Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/CE3C83C0-64EA-47F2-8824-C697947D32A6 : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/CE3C83C0-64EA-47F2-8824-C697947D32A6\\en-US'
+>LOG-16/02/2025 18:31:48: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/chrome_BITS_12720_857308410 deletado com sucesso
+>LOG-16/02/2025 18:31:49: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/Diagnostics deletado com sucesso
+>LOG-16/02/2025 18:31:49: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/exthost-a3b9a8.cpuprofile deletado com sucesso
+>LOG-16/02/2025 18:31:49: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/hsperfdata_DOUG deletado com sucesso
+>LOG-16/02/2025 18:31:49: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/libgdxDOUG deletado com sucesso
+>LOG-16/02/2025 18:31:50: 
+Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt\\$Recycle.Bin'
+>LOG-16/02/2025 18:31:50: 
+Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (1) : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (1)\\Program Files\\Common Files\\Microsoft Shared\\ink\\fsdefinitions\\auxpad\\auxbase.xml'
+>LOG-16/02/2025 18:31:50: 
+Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (2) : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/NLTmpMnt (2)\\Program Files\\Common Files\\Microsoft Shared\\ink\\fsdefinitions\\auxpad\\auxbase.xml'
+>LOG-16/02/2025 18:31:51: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/pyright-11700-q1J6F0p7kmcv deletado com sucesso
+>LOG-16/02/2025 18:31:51: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/pyright-12564-10PN8VakggIo deletado com sucesso
+>LOG-16/02/2025 18:31:51: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/pyright-14768-eL8JyD26Xlqz deletado com sucesso
+>LOG-16/02/2025 18:31:52: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/python-languageserver-cancellation deletado com sucesso
+>LOG-16/02/2025 18:31:52: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/Setup Log 2025-02-15 #001.txt deletado com sucesso
+>LOG-16/02/2025 18:31:52: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/Setup Log 2025-02-15 #002.txt deletado com sucesso
+>LOG-16/02/2025 18:31:52: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/SoftwareUpdate_Temp deletado com sucesso
+>LOG-16/02/2025 18:31:53: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/system-commandline-sentinel-files deletado com sucesso
+>LOG-16/02/2025 18:31:53: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/vscode-inno-updater-1739656569.log deletado com sucesso
+>LOG-16/02/2025 18:31:53: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/vscode-inno-updater-1739660560.log deletado com sucesso
+>LOG-16/02/2025 18:31:54: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/vscode-stable-user-x64 deletado com sucesso
+>LOG-16/02/2025 18:31:54: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/vscode-typescript deletado com sucesso
+>LOG-16/02/2025 18:31:54: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/wct6FE6.tmp deletado com sucesso
+>LOG-16/02/2025 18:31:55: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/wct77D0.tmp deletado com sucesso
+>LOG-16/02/2025 18:31:55: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/wctE835.tmp deletado com sucesso
+>LOG-16/02/2025 18:31:55: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/wctFE98.tmp deletado com sucesso
+>LOG-16/02/2025 18:31:56: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/WinGet deletado com sucesso
+>LOG-16/02/2025 18:31:56: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/_avg_ deletado com sucesso
+>LOG-16/02/2025 18:31:57: 
+Erro ao deletar o arquivo C:/Users/DOUG/AppData/Local/Temp/_MEI93482 : [WinError 5] Acesso negado: 'C:/Users/DOUG/AppData/Local/Temp/_MEI93482\\libffi-8.dll'
+>LOG-16/02/2025 18:31:57: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/{2B6C4564-BBF1-47F8-91FA-A76EA3EDC788} - OProcSessId.dat deletado com sucesso
+>LOG-16/02/2025 18:31:57: 
+Arquivo-pasta C:/Users/DOUG/AppData/Local/Temp/{A7A84292-6F26-41BB-82E9-3473B3511B06} - OProcSessId.dat deletado com sucesso
