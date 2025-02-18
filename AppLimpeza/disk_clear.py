@@ -1,6 +1,6 @@
 import subprocess as sbp
 import pyautogui
-import pygetwindow as gw
+from pywinauto import Application
 import psutil
 import time
 from logs import register_logs
@@ -11,15 +11,16 @@ def disk_clear():
         # Verifica se o Disk Cleanup está aberto
         for process in psutil.process_iter(['pid', 'name']):
             if process.info['name'] == "cleanmgr.exe":
+                pid = process.info['pid']
                 open = True
                 break
         time.sleep(7)
         if open: 
             try: 
-                # Traz a janela do Disk Cleanup para o primeiro plano
-                windows = gw.getWindowsWithTitle('Disk Cleanup')
-                if windows:
-                    windows[0].activate()
+                # Usando pywinauto para trazer a janela para o primeiro plano
+                app = Application().connect(process=pid)
+                dlg = app.window(title_re='.*Limpeza.*|.*Cleanup.*')
+                dlg.set_focus()  # Traz a janela para o primeiro plano
                 time.sleep(3)                                                        
                 for n in range(6):  # Loop para navegar nas opções do Disk Cleanup
                     pyautogui.press("down")  # Move o cursor para baixo
@@ -30,7 +31,7 @@ def disk_clear():
                 time.sleep(2)
                 pyautogui.press("enter") 
                 return open
-            except gw.PyGetWindowException as e :
+            except Exception as e :
                 register_logs(f"LOG - Erro de execução: {e}")
     except (sbp.SubprocessError , psutil.Error ) as e :
         register_logs(f"LOG - Erro de iniciação do clean : {e}")

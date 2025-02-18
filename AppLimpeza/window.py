@@ -1,14 +1,18 @@
 
-def window_main(tk:object ,text:str, close=False):
+def window_main(tk:object ,text:str,version:str ,close=False):
     # Cria uma janela com a mensagem 
     tkr = tk.Tk()
     tkr.title("App Limpeza")
     tkr.geometry("210x100")
     tkr.configure(bg="gray")
     tkr.overrideredirect(True)
+    label_version = tk.Label(
+        tkr,text=version,background='gray'
+    )
+    label_version.pack()
     label = tk.Label( 
-        tkr, text=text, background="gray",fg="gold",padx=40,
-        pady=40,font=("Helvetica", 16)
+        tkr, text=text, background="gray",fg="gold",padx=30,
+        pady=30,font=("Helvetica", 16)
     ) # janela de inicio
     label.pack()
     if close:
