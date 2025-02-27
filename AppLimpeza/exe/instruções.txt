@@ -1,0 +1,9 @@
+-------- INSTRUÇÕES ------
+
+1 - executar a instalação do 'TiClean_setup.exe' .
+2 - e bem simples e não precisa alterar nada e so dar ok em tudo .
+3 - depois de estar instalado e so usar o 'executar' (win + r) e digitar %ticlean% ,
+o programa ira executar a limpeza de temporarios e de disco .
+
+OBS : durante a execução do programa o usuario NÃO deve interagir com o pc ,tem que 
+esperar o programa terminar , aparecerá um pequena tela de finalização .
