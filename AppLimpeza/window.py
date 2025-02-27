@@ -7,7 +7,7 @@ def window_main(tk:object ,text:str,version:str ,close=False):
     tkr.configure(bg="gray")
     tkr.overrideredirect(True)
     label_version = tk.Label(
-        tkr,text=version,background='gray'
+        tkr,text=f"V {version}",background='gray'
     )
     label_version.pack()
     label = tk.Label( 

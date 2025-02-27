@@ -1,0 +1,15 @@
+SOBRE O APP  : 
+Ele limpa os temporarios da pasta temp do usuaio atual e depois executa a limpeza de disco do sistema 
+
+COMO EXECUTAR :
+1 - copiar o executavel para a pasta 'Arquivos de Programas (x86)'.
+
+2 - clicar e executar o bat 'criar_variavel_ambiete.bat' que cria a variavel de ambiente 
+    para ser mais facil de chamar o app , entretanto não e obrigatorio e so para praticidade .
+    O bat so e executado uma vez , antes da primeira ativação do app.
+
+3 - Caso tenha feito o passo anterior , pode chamar o app com o 'executar' (win + r) , so digitar %ticlean% 
+    e esperar ele agir , se não fez terar que executar manualmente 
+
+OBS : por enquanto o app estiver em execução não pode interfirir no computador , aparecerar a mensagem de 
+termino ao fim de sua execução 

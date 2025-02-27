@@ -21,6 +21,8 @@ def disk_clear():
                 app = Application().connect(process=pid)
                 dlg = app.window(title_re='.*Limpeza.*|.*Cleanup.*')
                 dlg.set_focus()  # Traz a janela para o primeiro plano
+                dlg.minimize()  # Minimiza a janela
+                dlg.restore()  # Restaura a janela , garnatir que a janela está no primeiro plano
                 time.sleep(3)                                                        
                 for n in range(6):  # Loop para navegar nas opções do Disk Cleanup
                     pyautogui.press("down")  # Move o cursor para baixo
