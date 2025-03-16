@@ -16,7 +16,7 @@ Alguns scripts em batch e programas simples podem ser utilizados para otimizar o
 
 <br>
 
-## `Limpeza_geral` 
+## Limpeza_geral 
 
 ### Sobre :
 Um script em lote (bat) simples com a função de remover arquivos desnecessários e verificar a integridade dos arquivos do sistema. Ele inclui os seguintes comandos:
@@ -30,7 +30,7 @@ O uso é muito simples: ao executar o script, será exibido um menu personalizad
 
 <br><br>
 
-## `Up_apps`
+## Up_apps
 
 ### Sobre :
 Um script em lote (bat) dedicado exclusivamente à atualização das aplicações do computador. Ele é capaz de atualizar tanto os softwares instalados quanto os aplicativos da Microsoft Store, desde que as aplicações possuam um caminho de atualização definido em seu manifesto.
@@ -39,7 +39,7 @@ Um script em lote (bat) dedicado exclusivamente à atualização das aplicaçõe
 Quando o script é executado, uma janela do prompt de comando será aberta, e o processo será realizado automaticamente, sem a necessidade de interação do usuário. Para atualizar todos os programas disponíveis, é necessário executar o script como administrador. Caso o script não funcione, pode ser porque o computador não possui o 'winget' instalado. Nesses casos, será necessário baixar manualmente o aplicativo 'App Installer' diretamente da Microsoft.
 <br><br>
 
-## `TiClean`
+## TiClean
 
 ### Sobre :
 Um programa desenvolvido em Python para realizar a limpeza de arquivos temporários e de disco de forma automatizada. O programa foi projetado de modo que sua execução seja visível ao usuário, permitindo acompanhar o progresso das operações em tempo real e garantindo a confiança de que o processo está realmente em andamento.
