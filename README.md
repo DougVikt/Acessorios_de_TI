@@ -4,15 +4,15 @@ Alguns scripts em batch e programas simples podem ser utilizados para otimizar o
 ## Índice
 
 - Limpeza_geral
-    - [Sobre](#sobre-limpeza_geral)
-    - [Uso](#uso-limpeza_geral)
+    - [Sobre](#sobre-)
+    - [Uso](#uso-)
 - Up_apps
-    - [Sobre](#sobre-up_apps)
-    - [Uso](#uso-up_apps)
+    - [Sobre](#sobre--1)
+    - [Uso](#uso--1)
 - TiClean
-    - [Sobre](#sobe-ticlean)
-    - [Uso](#uso-ticlean)
-    - [Componentes](#componentes-ticlean)
+    - [Sobre](#sobe--2)
+    - [Uso](#uso--2)
+    - [Componentes](#componentes-)
 
 <br>
 
