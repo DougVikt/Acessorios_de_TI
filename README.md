@@ -48,4 +48,14 @@ Um programa desenvolvido em Python para realizar a limpeza de arquivos temporár
 1. **main.py :**
 Script principal de execução responsável por integrar e controlar todas as funções necessárias para o pleno funcionamento da aplicação. Ele serve como o núcleo central, coordenando os processos e garantindo que cada funcionalidade seja executada corretamente e de maneira eficiente.
 2. **window.py :**
-Script contendo a função da janela  
+Script utilizando a biblioteca tkinter para criar uma janela simples. O foco está em exibir mensagens que indicam o início e o término da execução do programa, sem a inclusão de funcionalidades avançadas.
+3. **delete_temp.py :**
+Script que abre uma janela do explorador de arquivos no diretório dos arquivos temporários do usuário. Sua funcionalidade inclui excluir todos os arquivos possíveis no local e, ao final, fechar automaticamente a janela aberta.
+4. **disk_clear.py :**
+Script que abre o Limpador de Disco do sistema, incluindo comandos para minimizar e maximizar sua própria janela, garantindo que permaneça em primeiro plano. Utiliza a biblioteca pyautogui para automação via teclado, permitindo a seleção das opções desejadas e a confirmação com um clique no botão 'OK'.
+5. **logs.py :** 
+Script para identificar e registrar erros de execução do programa, além de monitorar e documentar em um arquivo de texto (.txt) todos os arquivos excluídos da pasta "Temp".
+
+### Uso :
+Faça o download do arquivo compactado [TiClean.rar](https://github.com/DougVikt/Acessorios_de_TI/tree/main/AppLimpeza/exe/TiClean.rar). Após extraí-lo, você encontrará o executável e instruções mais detalhadas de instalação e uso. Conforme mencionado na seção "Sobre", o programa é totalmente automatizado e requer apenas um clique inicial para começar a funcionar.
+
