@@ -1,0 +1,402 @@
+usar o ! nas variaveis 
+o call para os submenus e funções e o goto :eof para sair da função e retornar ao submenu 
+
+
+
+tasklist                 # Lista todos os processos em execução
+taskkill /IM nome.exe    # Mata processo pelo nome
+taskkill /PID 1234       # Mata processo pelo PID
+taskkill /F /IM nome.exe # Força término do processo
+sc query                 # Lista todos os serviços
+sc start NomeServico     # Inicia um serviço
+sc stop NomeServico      # Para um serviço
+sc config                # Configura serviços
+net start               # Lista serviços em execução
+net stop NomeServico    # Para um serviço
+appwiz.cpl              # Abre "Programas e Recursos"
+control appwiz.cpl      # Alternativa para Programas e Recursos
+wmic product get name   # Lista programas instalados
+msiexec /i arquivo.msi  # Instala pacote MSI
+msiexec /x arquivo.msi  # Desinstala pacote MSI
+systeminfo              # Informações detalhadas do sistema
+ver                     # Versão do Windows
+hostname                # Nome do computador
+whoami                  # Usuário atual
+
+
+:menu
+cls
+echo ===============================================
+echo   		VERIFICADOR DE APLICATIVOS 
+echo ===============================================
+echo.
+echo 1. Ver aplicativos instalados (64-bit)
+echo 2. Ver aplicativos instalados (32-bit)
+echo 3. Ver aplicativos de todos os usuarios
+echo 4. Ver todos aplicativos e seus pacotes
+echo 5. Opcoes de atualizacao 
+echo 6. Salvar lista em arquivo
+echo 7. Procurar aplicativo especifico
+echo 0. Sair
+echo.
+set /p opcao="Escolha uma opcao: "
+
+if "%opcao%"=="1" goto apps64
+if "%opcao%"=="2" goto apps32
+if "%opcao%"=="3" goto todos
+if "%opcao%"=="4" goto pacotes
+if "%opcao%"=="5" goto atualizar
+if "%opcao%"=="6" goto salvar
+if "%opcao%"=="7" goto procurar
+if "%opcao%"=="0" exit
+
+echo Opcao invalida!
+pause
+goto menu
+
+:apps64
+cls
+echo Aplicativos 64-bit:
+echo ===================
+powershell.exe -Command "Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName, DisplayVersion | Sort-Object -Property DisplayName -Unique | Format-Table -AutoSize"
+pause
+goto menu
+
+:apps32
+cls
+echo Aplicativos 32-bit:
+echo ===================
+powershell.exe -Command "Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName, DisplayVersion | Sort-Object -Property DisplayName -Unique | Format-Table -AutoSize"
+pause
+goto menu
+
+:todos
+cls
+echo Todos os aplicativos:
+echo =====================
+powershell.exe -Command "Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*, HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName, DisplayVersion | Sort-Object -Property DisplayName -Unique | Format-Table -AutoSize"
+pause
+goto menu
+
+:pacotes
+cls
+echo Aplicativos instalados com informacoes completas:
+echo ================================================
+powershell.exe -Command "$apps = Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*, HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object { $_.DisplayName } | Select-Object DisplayName, DisplayVersion, Publisher | Sort-Object DisplayName; $apps | Format-Table -AutoSize; Write-Host 'Total de aplicativos: ' $apps.Count -ForegroundColor Cyan"
+pause
+goto menu
+
+:salvar
+cls
+set /p nome_arquivo="Nome do arquivo para salvar (ex: apps.txt): "
+if "%nome_arquivo%"=="" set nome_arquivo=apps.txt
+
+echo Salvando lista de aplicativos...
+powershell.exe -Command "Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*, HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName, DisplayVersion | Sort-Object -Property DisplayName -Unique | Format-Table -AutoSize" > "%nome_arquivo%"
+echo Lista salva em %nome_arquivo%!
+pause
+goto menu
+
+:procurar
+cls
+set /p termo="Digite o nome do aplicativo a procurar: "
+if "%termo%"=="" goto menu
+
+echo Procurando por "%termo%"...
+powershell.exe -Command "$apps = Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*, HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName, DisplayVersion | Sort-Object -Property DisplayName -Unique; `$apps | Where-Object { `$_.DisplayName -like '*%termo%*' } | Format-Table -AutoSize"
+pause
+goto menu
+
+:atualizar
+cls
+echo ======================================================
+echo    	ATUALIZADOR DE APLICATIVOS
+echo ======================================================
+echo.
+echo 1. Ver aplicativos desatualizados
+echo 2. Atualizar via Winget (Windows Package Manager)
+echo 3. Atualizar todos os aplicativos Winget
+echo 4. Atualizar aplicativos Chocolatey (alternativo)
+echo 5. Instalar Winget (se nao estiver instalado)
+echo 6. Voltar ao menu anterior
+echo.
+set /p numero="Escolha uma opcao: "
+
+if "%numero%"=="1" goto ver_desatualizados
+if "%numero%"=="2" goto atualizar_winget
+if "%numero%"=="3" goto atualizar_todos_winget
+if "%numero%"=="4" goto atualizar_chocolatey
+if "%numero%"=="5" goto instalar_winget
+if "%numero%"=="6" goto menu
+
+echo Opcao invalida!
+pause
+goto atualizar
+
+:ver_desatualizados
+cls
+echo Verificando aplicativos desatualizados...
+echo.
+echo === Aplicativos com atualizacoes disponiveis ===
+powershell.exe -Command "if (Get-Command winget -ErrorAction SilentlyContinue) { winget upgrade } else { Write-Host 'Winget nao esta instalado. Use opcao 6 para instalar.' -ForegroundColor Red }"
+echo.
+pause
+goto atualizar
+
+:atualizar_winget
+cls
+echo Atualizando aplicativos via Winget...
+echo.
+echo Lista de aplicativos com atualizacoes disponiveis:
+powershell.exe -Command "if (Get-Command winget -ErrorAction SilentlyContinue) { winget upgrade } else { Write-Host 'Winget nao esta instalado.' -ForegroundColor Red }"
+echo.
+set /p confirmar="Deseja atualizar todos os aplicativos listados? (S/N): "
+if /i "%confirmar%"=="S" (
+    echo Iniciando atualizacao...
+    powershell.exe -Command "winget upgrade --all --accept-package-agreements --accept-source-agreements"
+    echo.
+    echo Atualizacao concluida!
+) else (
+    echo Atualizacao cancelada.
+)
+pause
+goto atualizar
+
+:atualizar_todos_winget
+cls
+echo Atualizando TODOS os aplicativos via Winget...
+echo.
+echo Esta operacao pode demorar varios minutos.
+echo.
+set /p confirmar="Confirmar atualizacao de TODOS os aplicativos? (S/N): "
+if /i "%confirmar%"=="S" (
+    call verificar_winget
+    echo Iniciando atualizacao completa...
+    winget upgrade --all --accept-package-agreements --accept-source-agreements --silent
+    echo.
+    echo Atualizacao completa concluida!
+) else (
+    echo Atualizacao cancelada.
+)
+pause
+goto atualizar
+
+:atualizar_chocolatey
+cls
+echo Verificando Chocolatey...
+echo.
+REM Verificar se Chocolatey está instalado
+where choco >nul 2>nul
+if %errorlevel% neq 0 (
+    echo Chocolatey nao esta instalado.
+    set /p instalar_choco="Deseja instalar o Chocolatey? (S/N): "
+    if /i "%instalar_choco%"=="S" (
+        echo Instalando Chocolatey...
+        powershell.exe -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+        echo Chocolatey instalado!
+    ) else (
+        echo Instalacao do Chocolatey cancelada.
+        pause
+        goto atualizar
+    )
+)
+
+echo Atualizando aplicativos via Chocolatey...
+echo.
+powershell.exe -Command "choco upgrade all -y"
+echo.
+echo Atualizacao via Chocolatey concluida!
+pause
+goto atualizar
+
+:instalar_winget
+cls
+echo Instalando Winget (Windows Package Manager)...
+echo.
+echo Verificando se o Winget ja esta instalado...
+where winget >nul 2>nul
+if %errorlevel% == 0 (
+    echo Winget ja esta instalado.
+    pause
+    goto atualizar
+)
+
+echo Instalando Winget a partir da Microsoft Store...
+echo.
+powershell.exe -Command "Write-Host 'Abrindo Microsoft Store para instalar o App Installer...' -ForegroundColor Yellow; start ms-windows-store://pdp/?productid=9NBLGGH4NNS1"
+echo.
+echo Siga as instrucoes na Microsoft Store para instalar o App Installer.
+echo Apos a instalacao, reinicie este script.
+pause
+goto atualizar
+
+:verificar_winget
+call :verify_winget
+if errorlevel 1 (
+    echo Nao foi possivel executar o Winget.
+    pause
+    exit /b 1
+)
+
+echo.
+echo Executando atualizacoes...
+echo.
+
+call :update_apps
+if errorlevel 1 (
+    echo Erro durante as atualizacoes!
+    pause
+    exit /b 1
+)
+
+echo.
+echo Processo concluido com sucesso!
+pause
+exit /b 0
+
+:: ==========================================
+:: FUNCAO: Verificar se Winget funciona
+:: ==========================================
+:verify_winget
+echo Verificando Winget...
+where winget >nul 2>&1
+if %errorlevel% neq 0 (
+    echo ERRO: Winget nao encontrado no PATH.
+    call :fix_winget_path
+    if errorlevel 1 (
+        echo Falha ao corrigir Winget.
+        exit /b 1
+    )
+)
+
+:: Testar se winget funciona
+winget --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo ERRO: Winget encontrado mas nao funciona.
+    call :diagnose_winget
+    exit /b 1
+)
+
+echo Winget funcionando: OK
+exit /b 0
+
+:: ==========================================
+:: FUNCAO: Corrigir PATH do Winget
+:: ==========================================
+:fix_winget_path
+echo Tentando corrigir o PATH do Winget...
+
+for /f "tokens=*" %%i in ('powershell "(Get-AppxPackage Microsoft.DesktopAppInstaller).InstallLocation 2>$null"') do set "wingetPath=%%i"
+
+if "%wingetPath%"=="" (
+    echo ERRO: Nao foi possivel encontrar o Winget.
+    exit /b 1
+)
+
+if not exist "%wingetPath%\winget.exe" (
+    echo ERRO: Arquivo winget.exe nao encontrado.
+    exit /b 1
+)
+
+:: Adicionar ao PATH temporariamente
+set "PATH=%wingetPath%;%PATH%"
+
+:: Testar novamente
+winget --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo ERRO: Winget ainda nao funciona apos correcao.
+    exit /b 1
+)
+
+echo Correcao bem-sucedida!
+exit /b 0
+
+:: ==========================================
+:: FUNCAO: Diagnóstico do Winget
+:: ==========================================
+:diagnose_winget
+echo.
+echo Executando diagnostico do Winget...
+echo.
+
+:: Verificar se App Installer está instalado
+powershell -Command "`$package = Get-AppxPackage Microsoft.DesktopAppInstaller; if (-not `$package) { Write-Host 'ERRO: App Installer nao instalado' -ForegroundColor Red; exit 1 } else { Write-Host 'App Installer: ' `$package.Version -ForegroundColor Green }"
+
+:: Verificar permissões
+echo Verificando permissoes...
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    echo AVISO: Execute como Administrador para melhor resultado.
+)
+
+:: Tentar reinstalação
+echo.
+set /p reinstall="Deseja tentar reinstalar o Winget? (S/N): "
+if /i "%reinstall%"=="S" (
+    call :reinstall_winget
+    exit /b %errorlevel%
+)
+
+exit /b 1
+
+:: ==========================================
+:: FUNCAO: Reinstalar Winget
+:: ==========================================
+:reinstall_winget
+echo Reinstalando Winget...
+echo.
+
+powershell -Command "try { Get-AppxPackage Microsoft.DesktopAppInstaller | Remove-AppxPackage -ErrorAction Stop; Write-Host 'Remocao bem-sucedida' -ForegroundColor Green } catch { Write-Host 'Erro na remocao: ' `$_.Exception.Message -ForegroundColor Red; exit 1 }"
+
+echo Instalando Winget...
+powershell -Command "try { Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe -ErrorAction Stop; Write-Host 'Instalacao bem-sucedida' -ForegroundColor Green } catch { Write-Host 'Erro na instalacao: ' `$_.Exception.Message -ForegroundColor Red; exit 1 }"
+
+timeout /t 5 /nobreak >nul
+
+:: Verificar se funcionou
+winget --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo ERRO: Reinstalacao falhou.
+    exit /b 1
+)
+
+echo Reinstalacao bem-sucedida!
+exit /b 0
+
+:: ==========================================
+:: FUNCAO: Atualizar aplicativos com tratamento de erro
+:: ==========================================
+:update_apps
+echo Verificando atualizacoes disponiveis...
+
+winget upgrade 2>&1 | findstr /C:"No installed packages" >nul
+if %errorlevel% equ 0 (
+    echo Nenhuma atualizacao disponivel.
+    exit /b 0
+)
+
+echo.
+set /p confirmar="Deseja atualizar todos os aplicativos? (S/N): "
+if /i "%confirmar%" neq "S" (
+    echo Atualizacao cancelada pelo usuario.
+    exit /b 0
+)
+
+echo Executando atualizacoes...
+echo.
+
+:: Executar com tratamento de erro detalhado
+winget upgrade --all --accept-package-agreements --accept-source-agreements 2> "%temp%\winget_error.log"
+
+if %errorlevel% neq 0 (
+    echo ERRO durante a atualizacao!
+    echo.
+    echo Ultimos erros:
+    type "%temp%\winget_error.log" | more
+    echo.
+    echo Verifique o arquivo completo: "%temp%\winget_error.log"
+    exit /b 1
+)
+
+del "%temp%\winget_error.log" 2>nul
+echo Atualizacao concluida com sucesso!
