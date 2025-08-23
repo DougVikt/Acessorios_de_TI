@@ -2,7 +2,7 @@
 REM dougvikt - 2025
 mode 65,30
 setlocal EnableDelayedExpansion
-title TI SUBREMO - Ferramenta do TI
+title TI SUPREMO - Ferramenta do TI
 color 0A
 
 :: Verifica se o script está sendo executado como administrador
@@ -31,7 +31,7 @@ echo               [ 1 ] ==== APLICATIVOS
 echo               [ 2 ] ==== SISTEMA 
 echo               [ 3 ] ==== REDE 
 echo               [ 4 ] ==== UTILIARIOS 
-echo               [ 5 ] ==== SAIR 
+echo               [ 0 ] ==== SAIR 
 
 set /p choice0="  Escolha uma opcao: "
 :: Verifica a opção escolhida
@@ -39,7 +39,7 @@ if "!choice0!"=="1" call :aplications & goto :main_menu
 if "!choice0!"=="2" call :system & goto :main_menu
 if "!choice0!"=="3" call :network & goto :main_menu
 if "!choice0!"=="4" call :utilities & goto :main_menu
-if "!choice0!"=="5" exit 
+if "!choice0!"=="0" exit 
 
 
 :: submenu de aplicativos
@@ -52,14 +52,14 @@ echo.
 echo           [ 1 ] = INSTALAR PROGRAMAS DO ARQUIVO TXT 
 echo           [ 2 ] = VERIFICAR PROGRAMAS INSTALADOS
 echo           [ 3 ] = ATUALIZAR PROGRAMAS INSTALADOS
-echo           [ 4 ] = VOLTAR AO MENU PRINCIPAL
+echo           [ 0 ] = VOLTAR AO MENU PRINCIPAL
 
 set /p choice1="Escolha uma opcao: "
 :: Verifica a opção escolhida
 if "!choice1!"=="1" call :install_apps_txt
 if "!choice1!"=="2" call :check_installed_apps
 if "!choice1!"=="3" call :update_installed_apps
-if "!choice1!"=="4" goto :eof
+if "!choice1!"=="0" goto :eof
 goto :aplications
 
 :: submenu de sistema
@@ -69,16 +69,16 @@ echo ================================================================
 echo   	              MENU FERRAMENTAS DE SISTEMA
 echo ================================================================
 echo.
-echo 1 = VERIFICAR USO DE DISCO
-echo 2 = VERIFICAR USO DE MEMÓRIA
-echo 3 = VERIFICAR USO DE CPU
-echo 4 = LIMPAR ARQUIVOS TEMP
-echo 5 = LIMPEZA DE REGISTRO
-echo 6 = LIMPEZA DE DISCO 
-echo 7 = CORRIGIR PROBLEMAS NO SISTEMA
-echo 8 = VERIFICAR INTEGRIDADE DO SISTEMA
-echo 9 = RESTAURAR INTEGRIDADE DO SISTEMA
-echo 0 = VOLTAR AO MENU PRINCIPAL  
+echo            [ 1 ] = VERIFICAR USO DE DISCO
+echo            [ 2 ] = VERIFICAR USO DE MEMÓRIA
+echo            [ 3 ] = VERIFICAR USO DE CPU
+echo            [ 4 ] = LIMPAR ARQUIVOS TEMP
+echo            [ 5 ] = LIMPEZA DE REGISTRO
+echo            [ 6 ] = LIMPEZA DE DISCO 
+echo            [ 7 ] = CORRIGIR PROBLEMAS NO SISTEMA
+echo            [ 8 ] = VERIFICAR INTEGRIDADE DO SISTEMA
+echo            [ 9 ] = RESTAURAR INTEGRIDADE DO SISTEMA
+echo            [ 0 ] = VOLTAR AO MENU PRINCIPAL  
 
 set /p choice2="Escolha uma opcao: "
 :: Verifica a opção escolhida
@@ -89,7 +89,9 @@ if "!choice2!"=="4" call :clear_temp_files
 if "!choice2!"=="5" call :check_system_services
 if "!choice2!"=="6" call :disk_cleanup
 if "!choice2!"=="7" call :fix_system_issues
-if "!choice2!"=="8" goto :eof
+if "!choice2!"=="8" call :check_system_integrity
+if "!choice2!"=="9" call :restore_system_integrity
+if "!choice2!"=="0" goto :eof
 goto :system
 
 :: submenu de rede
@@ -99,18 +101,18 @@ echo ================================================================
 echo   	              MENU FERRAMENTAS DE REDE                            
 echo ================================================================
 echo.
-echo 1 = VERIFICAR CONEXÃO COM A INTERNET
-echo 2 = VERIFICAR ENDEREÇO IP
-echo 3 = VERIFICAR CONFIGURAÇÕES DE REDE
-echo 4 = VERIFICAR USO DE LARGURA DE BANDA
-echo 5 = VERIFICAR SERVIÇOS DE REDE
-echo 6 = DEFINIR DNS PARA GOOGLE
-echo 7 = DEFINIR DNS PARA CLOUDFARE
-echo 8 = DEFINIR DNS PARA OPENDNS
-echo 9 = ADICIONAR DNS PERSONALIZADO
-echo 9 = RESTAURAR DNS PARA PADRÃO
-echo 10 = REINICIAR ATAPTADORES DE REDE 
-echo 6 = VOLTAR AO MENU PRINCIPAL
+echo            [ 1 ]  = VERIFICAR CONEXÃO COM A INTERNET
+echo            [ 2 ]  = VERIFICAR ENDEREÇO IP
+echo            [ 3 ]  = VERIFICAR CONFIGURAÇÕES DE REDE
+echo            [ 4 ]  = VERIFICAR USO DE LARGURA DE BANDA
+echo            [ 5 ]  = VERIFICAR SERVIÇOS DE REDE
+echo            [ 6 ]  = DEFINIR DNS PARA GOOGLE
+echo            [ 7 ]  = DEFINIR DNS PARA CLOUDFARE
+echo            [ 8 ]  = DEFINIR DNS PARA OPENDNS
+echo            [ 9 ]  = ADICIONAR DNS PERSONALIZADO
+echo            [ 10 ] = RESTAURAR DNS PARA PADRÃO
+echo            [ 11 ] = REINICIAR ATAPTADORES DE REDE 
+echo            [ 0 ]  = VOLTAR AO MENU PRINCIPAL
 
 set /p choice3="Escolha uma opcao: "
 :: Verifica a opção escolhida
@@ -125,24 +127,31 @@ if "!choice3!"=="8" goto :set_opendns
 if "!choice3!"=="9" call :add_custom_dns
 if "!choice3!"=="10" call :restore_default_dns
 if "!choice3!"=="11" call :restart_network_adapters
-if "!choice3!"=="12" goto :eof
+if "!choice3!"=="0" goto :eof
 goto :network
 
 :: submenu de utilitários
 :utilities
 cls
 echo ================================================================
-echo   	    MENU FERRAMENTAS DE UTILITARIOS
+echo   	              MENU FERRAMENTAS DE UTILITARIOS
 echo ================================================================
 echo.
-echo 1 = VERIFICAR USO DE DISCO
-echo 2 = VERIFICAR USO DE MEMÓRIA
-echo 3 = VERIFICAR USO DE CPU
-echo 4 = LIMPAR ARQUIVOS TEMP
-echo 5 = VERIFICAR SERVIÇOS DO SISTEMA
-echo 6 = LIMPEZA DE REGISTRO
-echo 7 = GERAR RELATORIO DO SISTEMA
-echo 8 = VOLTAR AO MENU PRINCIPAL
+echo            [ 1 ] = VERIFICAR USO DE DISCO
+echo            [ 2 ] = VERIFICAR USO DE MEMÓRIA
+echo            [ 3 ] = VERIFICAR USO DE CPU
+echo            [ 4 ] = LIMPAR ARQUIVOS TEMP
+echo            [ 5 ] = VERIFICAR SERVIÇOS DO SISTEMA
+echo            [ 6 ] = LIMPEZA DE REGISTRO
+echo            [ 7 ] = GERAR RELATORIO DO SISTEMA
+echo            [ 8 ] = CRIAR PONTO DE RESTAURACAO
+echo            [ 9 ] = CRIA USUARIO ADMINISTRADOR
+echo            [ 10 ] = ATIVAR CONTA DE ADMINISTRADOR INTERNO
+echo            [ 11 ] = DESATIVAR CONTA DE ADMINISTRADOR INTERNO
+echo            [ 12 ] = ATIVAR MODO DE SEGURANCA
+echo            [ 13 ] = ATIVAR HIRBERNAR
+echo            [ 14 ] = DESATIVAR HIBERNAR
+echo            [ 0 ] = VOLTAR AO MENU PRINCIPAL
 
 set /p choice4="Escolha uma opcao: "
 
@@ -154,12 +163,21 @@ if "!choice4!"=="4" call :clear_temp_files
 if "!choice4!"=="5" call :check_system_services
 if "!choice4!"=="6" call :clean_registry
 if "!choice4!"=="7" call :disk_cleanup
-if "!choice4!"=="8" goto :eof
+if "!choice4!"=="8" call :generate_system_report
+if "!choice4!"=="9" call :create_admin_user
+if "!choice4!"=="10" call :enable_builtin_admin
+if "!choice4!"=="11" call :disable_builtin_admin
+if "!choice4!"=="12" call :enable_safe_mode
+if "!choice4!"=="13" call :enable_hibernation
+if "!choice4!"=="14" call :disable_hibernation
+if "!choice4!"=="0" goto :eof
 goto :utilities
 
 
-::      AREA DAS FUNÇOES 
-:: =================================
+
+::              AREA DAS FUNÇOES 
+:: ===================================================
+
 :: Referente ao submenu de aplicativos
 :: =================================
 
@@ -168,8 +186,34 @@ goto :utilities
 :install_apps_txt
 cls 
 echo Instalando programas do arquivo TXT...
+set "txtfile=install_software.txt"
+if not exist "%txtfile%" (
+    echo  Erro: Arquivo install_software.txt não encontrado.
+    pause
+    goto :eof
+)
+:: Verifica se o winget está instalado
+echo Verificando se o winget esta instalado e funcionando 
+:: Usa a mesma função da escolha 2 
+call :check_winget
+:: Lê cada linha do arquivo e instala o pacote
+for /f "tokens=*" %%i in (%txtfile%) do (
+    set "package=%%i"
+    if not "!package!"=="" if not "!package:~0,1!"=="#" (
+        echo Instalando !package!...
+        winget install --id !package! -e --silent
+        if !errorlevel! equ 0 (
+            echo !package! instalado com sucesso.
+        ) else (
+            echo Falha ao instalar !package!.
+        )
+    )
+)
+echo.
+echo Instalacao concluida.
 pause
 goto :eof
+
 
 ::      Escolha = 2
 :: -------------------------
@@ -223,9 +267,8 @@ if %errorlevel% neq 0 (
     call :diagnose_winget
     exit /b 1
 )
-
 echo Winget funcionando: OK
-exit /b 0
+goto :eof
 
 :: Resolvendo problemas do Winget no path
 :fix_winget_path
@@ -260,17 +303,14 @@ exit /b 0
 echo.
 echo Executando diagnostico do Winget...
 echo.
-
 :: Verificar se App Installer está instalado
 powershell -Command "`$package = Get-AppxPackage Microsoft.DesktopAppInstaller; if (-not `$package) { Write-Host 'ERRO: App Installer nao instalado' -ForegroundColor Red; exit 1 } else { Write-Host 'App Installer: ' `$package.Version -ForegroundColor Green }"
-
 :: Verificar permissões
 echo Verificando permissoes...
 net session >nul 2>&1
 if %errorlevel% neq 0 (
     echo AVISO: Execute como Administrador para melhor resultado.
 )
-
 :: Tentar reinstalação
 echo.
 set /p reinstall="Deseja tentar reinstalar o Winget? (S/N): "
@@ -278,30 +318,24 @@ if /i "%reinstall%"=="S" (
     call :reinstall_winget
     exit /b %errorlevel%
 )
-
 exit /b 1
 
 :: Reinstalando o Winget
 :reinstall_winget
 echo Reinstalando Winget...
 echo.
-
 powershell -Command "try { Get-AppxPackage Microsoft.DesktopAppInstaller | Remove-AppxPackage -ErrorAction Stop; Write-Host 'Remocao bem-sucedida' -ForegroundColor Green } catch { Write-Host 'Erro na remocao: ' `$_.Exception.Message -ForegroundColor Red; exit 1 }"
-
 echo Instalando Winget...
 powershell -Command "try { Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe -ErrorAction Stop; Write-Host 'Instalacao bem-sucedida' -ForegroundColor Green } catch { Write-Host 'Erro na instalacao: ' `$_.Exception.Message -ForegroundColor Red; exit 1 }"
-
 timeout /t 5 /nobreak >nul
-
 :: Verificar se funcionou
 winget --version >nul 2>&1
 if %errorlevel% neq 0 (
     echo ERRO: Reinstalacao falhou.
     exit /b 1
 )
-
 echo Reinstalacao bem-sucedida!
-exit /b 0
+goto :eof
 
 
 :: refente ao submenu de sistema
