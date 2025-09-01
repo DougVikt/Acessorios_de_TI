@@ -1,6 +1,6 @@
 @echo off
 REM dougvikt - 2025
-mode 65,30
+mode 65,200
 setlocal EnableDelayedExpansion
 title TI SUPREMO - Ferramenta do TI
 color 0A
@@ -45,20 +45,36 @@ if "!choice0!"=="0" exit
 :: submenu de aplicativos
 :aplications
 cls
+:aplications
+cls
 echo ================================================================
 echo   	              MENU FERRAMENTAS DE APLICATIVOS
 echo ================================================================
 echo.
-echo           [ 1 ] = INSTALAR PROGRAMAS DO ARQUIVO TXT 
-echo           [ 2 ] = VERIFICAR PROGRAMAS INSTALADOS
-echo           [ 3 ] = ATUALIZAR PROGRAMAS INSTALADOS
-echo           [ 0 ] = VOLTAR AO MENU PRINCIPAL
+echo           [ 1 ]  = INSTALAR PROGRAMAS DO ARQUIVO TXT 
+echo           [ 2 ]  = VERIFICAR PROGRAMAS INSTALADOS
+echo           [ 3 ]  = ATUALIZAR PROGRAMAS INSTALADOS
+echo           [ 4 ]  = SALVAR LISTA DOS INSTALADOS EM ARQUIVO
+echo           [ 5 ]  = DESINSTALAR PROGRAMAS ESPECÍFICOS
+echo           [ 6 ]  = REPARAR PROGRAMAS INSTALADOS  
+echo           [ 7 ]  = LIMPAR CACHE DE APLICATIVOS
+echo           [ 8 ]  = VERIFICAR PROGRAMAS COM INICIAL AUTOMÁTICA
+echo           [ 9 ]  = OTIMIZAR INICIALIZAÇÃO DE PROGRAMAS
+echo           [ 10 ] = VERIFICAR APLICATIVOS VULNERÁVEIS
+echo           [ 0 ]  = VOLTAR AO MENU PRINCIPAL     
 
 set /p choice1="Escolha uma opcao: "
 :: Verifica a opção escolhida
 if "!choice1!"=="1" call :install_apps_txt
 if "!choice1!"=="2" call :check_installed_apps
 if "!choice1!"=="3" call :update_installed_apps
+if "!choice1!"=="4" call :save_installed_apps_list
+if "!choice1!"=="5" call :uninstall_specific_apps
+if "!choice1!"=="6" call :repair_installed_apps
+if "!choice1!"=="7" call :clear_app_cache
+if "!choice1!"=="8" call :check_startup_apps
+if "!choice1!"=="9" call :optimize_startup_apps
+if "!choice1!"=="10" call :check_vulnerable_apps
 if "!choice1!"=="0" goto :eof
 goto :aplications
 
@@ -70,7 +86,7 @@ echo   	              MENU FERRAMENTAS DE SISTEMA
 echo ================================================================
 echo.
 echo            [ 1 ] = VERIFICAR USO DE DISCO
-echo            [ 2 ] = VERIFICAR USO DE MEMÓRIA
+echo            [ 2 ] = VERIFICAR USO DE MEMORIA
 echo            [ 3 ] = VERIFICAR USO DE CPU
 echo            [ 4 ] = LIMPAR ARQUIVOS TEMP
 echo            [ 5 ] = LIMPEZA DE REGISTRO
@@ -185,10 +201,16 @@ goto :utilities
 :: -------------------------
 :install_apps_txt
 cls 
+set /p name_file="Digite o nome do arquivo ( não colocar o .txt ) : "
+echo O progrma verifica o arquivo %name_file%.txt na pasta do script.
+echo Cada linha do arquivo deve conter o ID do pacote conforme o Winget.
+echo Linhas vazias ou que comecem com # serao ignoradas.
+echo Certifique-se de que o arquivo esta de acordo para ter sucesso .
+pause
 echo Instalando programas do arquivo TXT...
-set "txtfile=install_software.txt"
+set "txtfile=%name_file%.txt"
 if not exist "%txtfile%" (
-    echo  Erro: Arquivo install_software.txt não encontrado.
+    echo  Erro: Arquivo %~dp0%name_file%.txt não encontrado.
     pause
     goto :eof
 )
@@ -216,6 +238,18 @@ goto :eof
 
 
 ::      Escolha = 2
+:: -------------------------
+:check_installed_apps
+:: Verifica os aplicativos instalados 
+cls
+echo Verificando aplicativos instalados ...
+echo.
+powershell.exe -Command "$apps = Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*, HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object { $_.DisplayName } | Select-Object DisplayName, DisplayVersion, Publisher | Sort-Object DisplayName; $apps | Format-Table -AutoSize; Write-Host 'Total de aplicativos: ' $apps.Count -ForegroundColor Cyan"
+pause
+goto :eof
+
+
+::      Escolha = 3
 :: -------------------------
 :update_installed_apps
 :: Atualizndo todos os aplicativos instalados via Winget
@@ -338,7 +372,51 @@ echo Reinstalacao bem-sucedida!
 goto :eof
 
 
-:: refente ao submenu de sistema
+::      Escolha = 4
+:: -------------------------
+:save_installed_apps_list
+:: Salvando a lista de aplicativos instalados em um arquivo TXT
+cls
+echo A lista sera salva no arquivo instalado_apps.txt
+echo Salvando lista de aplicativos...
+winget list > "%~dp0installed_apps.txt" 
+if %errorlevel% equ 0 (
+    echo Lista de programas instalados salva em installed_apps.txt.
+) else (
+    echo Algo deu errado ao processar a lista de programas.
+)
+pause
+goto :eof
+
+::      Escolha = 5
+:: -------------------------
+:uninstall_specific_apps
+cls
+echo Desinstalar programas especificos via Winget.
+echo.
+set /p app_name="Digite o nome ou parte do nome do aplicativo a desinstalar: "
+if "%app_name%"=="" (
+    echo Nenhum nome fornecido. Operacao cancelada.
+    pause
+    goto :eof
+)   
+
+
+
+:: Refente ao submenu de sistema
+:: =================================
+
+::     Escolha = 1
+:: -------------------------
+:check_disk_usage
+cls
+echo Verificando uso dos discos...
+:: Verifica o uso do disco
+powershell -command ("Get-WmiObject Win32_LogicalDisk | ForEach-Object 
+{ $totalMB = [math]::Round($_.Size / 1MB); $freeMB = [math]::Round($_.FreeSpace / 1MB); Write-Output ('Unidade {0}: Total: {1} MB - Livre: {2} MB' -f $_.DeviceID, $totalMB, $freeMB) }"
+)
+pause
+goto :eof
 
 :: referente ao submenu de rede
 
