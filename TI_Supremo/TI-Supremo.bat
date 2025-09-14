@@ -1,3 +1,5 @@
+:: TROCANDO PARA O SHELL
+
 @echo off
 REM dougvikt - 2025
 mode 65,200
