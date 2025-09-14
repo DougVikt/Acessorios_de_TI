@@ -186,9 +186,11 @@ goto :utilities
 :install_apps_txt
 cls 
 echo Instalando programas do arquivo TXT...
-set "txtfile=install_software.txt"
+
+set "txtfile=%~dp0install_software.txt"
 if not exist "%txtfile%" (
-    echo  Erro: Arquivo install_software.txt não encontrado.
+    echo.
+    echo  Erro: Arquivo install_software.txt nao encontrado.
     pause
     goto :eof
 )
@@ -197,6 +199,8 @@ echo Verificando se o winget esta instalado e funcionando
 :: Usa a mesma função da escolha 2 
 call :check_winget
 :: Lê cada linha do arquivo e instala o pacote
+set "successCount=0"
+set "failCount=0"
 for /f "tokens=*" %%i in (%txtfile%) do (
     set "package=%%i"
     if not "!package!"=="" if not "!package:~0,1!"=="#" (
@@ -204,13 +208,16 @@ for /f "tokens=*" %%i in (%txtfile%) do (
         winget install --id !package! -e --silent
         if !errorlevel! equ 0 (
             echo !package! instalado com sucesso.
+            set /a successCount+=1
         ) else (
             echo Falha ao instalar !package!.
+            set /a failCount+=1
         )
     )
 )
+color 0A
 echo.
-echo Instalacao concluida.
+echo Instalacao terminada:[ %successCount% ] sucesso , [ %failCount% ] falhou.
 pause
 goto :eof
 
@@ -268,7 +275,7 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 echo Winget funcionando: OK
-goto :eof
+exit /b 0
 
 :: Resolvendo problemas do Winget no path
 :fix_winget_path
