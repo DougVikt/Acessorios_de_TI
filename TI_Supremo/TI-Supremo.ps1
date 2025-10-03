@@ -100,6 +100,111 @@ function Aplications {
         }
     } while ($running)
    
+function InstallAppsTxt{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$false)]
+        [switch]$UseWinget = $true,
+        [Parameter(Mandatory=$false)]
+        [switch]$UseChocolatey = $false,
+        [Parameter(Mandatory=$false)]
+        [switch]$Force = $false
+    )
+    Clear-Host
+    Write-Output " Verifique se o arquivo apps.txt está no mesmo diretório do script e contém os IDs corretos dos aplicativos."
+    Write-Output " Ex: # Navegadores"
+    Write-Output "      Google.Chrome"
+    # Obtém o diretório do script atual
+    $scriptDirectory = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
+    # Solicita o nome do arquivo txt
+    $FileName = Read-Host "Digite o nome do arquivo txt (ex: apps.txt)"
+    # Cria o caminho completo do arquivo txt
+    $FilePath = Join-Path -Path $scriptDirectory -ChildPath $FileName
+    # Verifica se o arquivo existe
+    if (-not (Test-Path $FilePath)) {
+        Write-Error "Arquivo não encontrado: $FilePath"
+        InstallAppsTxt -UseWinget:$UseWinget -UseChocolatey:$UseChocolatey -Force:$Force
+    }    
+    # Verifica se é um arquivo .txt
+    if ((Get-Item $FilePath).Extension -ne ".txt") {
+        Write-Warning "O arquivo especificado não é um arquivo de texto(.txt)"
+        Write-Warning "Por favor, forneça um arquivo .txt válido.";Read-Host
+        InstallAppsTxt -UseWinget:$UseWinget -UseChocolatey:$UseChocolatey -Force:$Force
+        
+    }
+    # Ler o arquivo e processa cada linha
+    $apps = Get-Content $FilePath | Where-Object { 
+        $_.Trim() -ne "" -and $_.Trim() -notlike "#*" 
+    }
+    
+    if ($apps.Count -eq 0) {
+        Write-Warning "Nenhum aplicativo encontrado no arquivo $FilePath"
+        return
+    }
+    
+    Write-Host "Encontrados $($apps.Count) aplicativos para instalação:" -ForegroundColor Magenta
+    $apps | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
+    Write-Host ""
+    
+    # Confirmar instalação
+    if (-not $Force) {
+        $confirmation = Read-Host "Deseja prosseguir com a instalação? (S/N)"
+        if ($confirmation -notmatch '^[SsYy]') {
+            Write-Host "Instalação cancelada." -ForegroundColor Red
+            return
+        }
+    }
+    
+    $successCount = 0
+    $failCount = 0
+    $failedApps = @()
+    
+    # Instalar usando Winget
+    if (Ensure-Winget) {
+        # Verificar se winget está disponível
+        if (Get-Command winget -ErrorAction SilentlyContinue) {
+            Write-Host "Instalando aplicativos usando Winget..." -ForegroundColor Cyan
+            
+            foreach ($app in $apps) {
+                Write-Host "Instalando: $app" -ForegroundColor White
+                
+                try {
+                    winget install --id $app --silent --accept-package-agreements --accept-source-agreements
+                    
+                    if ($LASTEXITCODE -eq 0) {
+                        Write-Host "✓ $app instalado com sucesso" -ForegroundColor Green
+                        $successCount++
+                    } else {
+                        Write-Host "✗ Falha ao instalar $app" -ForegroundColor Red
+                        $failCount++
+                        $failedApps += $app
+                    }
+                }
+                catch {
+                    Write-Host "✗ Erro ao instalar $app : $($_.Exception.Message)" -ForegroundColor Red
+                    $failCount++
+                    $failedApps += $app
+                }
+                
+                Start-Sleep -Seconds 2  # Pequena pausa entre instalações
+            }
+        } else {
+            Write-Warning "Winget não encontrado. Pulando instalação via Winget."
+        }
+    
+    }
+    
+    # Resumo da instalação
+    Write-Host "=== RESUMO DA INSTALAÇÃO ===" -ForegroundColor Magenta
+    Write-Host "Aplicativos instalados com sucesso: $successCount" -ForegroundColor Green
+    Write-Host "Aplicativos com falha: $failCount" -ForegroundColor Red
+    
+    if ($failedApps.Count -gt 0) {
+        Write-Host "Aplicativos que falharam na instalação:" -ForegroundColor Red
+        $failedApps | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
+    }
+}
+
 }
 
 # Função para o menu de Systema
@@ -238,4 +343,34 @@ function Utilities {
     } while ($running)
    
 }
+
+
+function Ensure-Winget {
+    try {
+        # Verifica se o comando winget está disponível
+        if (Get-Command winget -ErrorAction SilentlyContinue) {
+            Write-Host "Winget verificado."
+            return $true
+        }
+        else {
+            Write-Warning "Winget não encontrado. Tentando instalar..."
+
+            # Tenta instalar o módulo Microsoft.WinGet.Client via PowerShell Gallery
+            Install-PackageProvider -Name NuGet -Force -ErrorAction Stop | Out-Null
+            Install-Module -Name Microsoft.WinGet.Client -Force -ErrorAction Stop | Out-Null
+
+            # Usa Repair para garantir instalação finalizada
+            Repair-WinGetPackageManager -AllUsers -ErrorAction Stop
+
+            Write-Host "Winget instalado com sucesso." -ForegroundColor Yellow
+            return $true
+        }
+    }
+    catch {
+        # Trata erros de instalação
+        Write-Error "Erro ao verificar ou instalar Winget: $($_.Exception.Message)" -ForegroundColor Red
+        return $false
+    }
+}
+
 MainMenu
