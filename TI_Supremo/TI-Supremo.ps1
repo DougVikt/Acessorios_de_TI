@@ -99,14 +99,12 @@ function Aplications {
             default { Write-Output "Opcao invalida. Pressione Enter para tentar novamente."; Read-Host }
         }
     } while ($running)
-   
+}
+# FUNÇÕES DE APLICATIVOS
+# Função para instalar aplicativos a partir de um arquivo apps.txt
 function InstallAppsTxt{
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$false)]
-        [switch]$UseWinget = $true,
-        [Parameter(Mandatory=$false)]
-        [switch]$UseChocolatey = $false,
         [Parameter(Mandatory=$false)]
         [switch]$Force = $false
     )
@@ -115,23 +113,32 @@ function InstallAppsTxt{
     Write-Output " Ex: # Navegadores"
     Write-Output "      Google.Chrome"
     # Obtém o diretório do script atual
-    $scriptDirectory = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
-    # Solicita o nome do arquivo txt
-    $FileName = Read-Host "Digite o nome do arquivo txt (ex: apps.txt)"
-    # Cria o caminho completo do arquivo txt
-    $FilePath = Join-Path -Path $scriptDirectory -ChildPath $FileName
+    $scriptDirectory = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent   
+    $attempt_count = 0
     # Verifica se o arquivo existe
-    if (-not (Test-Path $FilePath)) {
-        Write-Error "Arquivo não encontrado: $FilePath"
-        InstallAppsTxt -UseWinget:$UseWinget -UseChocolatey:$UseChocolatey -Force:$Force
-    }    
-    # Verifica se é um arquivo .txt
-    if ((Get-Item $FilePath).Extension -ne ".txt") {
-        Write-Warning "O arquivo especificado não é um arquivo de texto(.txt)"
-        Write-Warning "Por favor, forneça um arquivo .txt válido.";Read-Host
-        InstallAppsTxt -UseWinget:$UseWinget -UseChocolatey:$UseChocolatey -Force:$Force
-        
-    }
+    do{ 
+        clear-Host
+        # Solicita o nome do arquivo txt
+        $FileName = Read-Host "Digite o nome do arquivo txt (ex: apps.txt)"
+        # Cria o caminho completo do arquivo txt
+        $FilePath = Join-Path -Path $scriptDirectory -ChildPath $FileName
+        if (-not (Test-Path $FilePath)) {
+            Write-Warning "Arquivo não encontrado: $FilePath"
+            Write-Warning "Por favor, verifique o nome do arquivo e tente novamente.";Read-Host
+            $attempt_count++
+        }    
+        # Verifica se é um arquivo .txt
+        elseif ((Get-Item $FilePath).Extension -ne ".txt") {
+            Write-Warning "O arquivo especificado não é um arquivo de texto(.txt)"
+            Write-Warning "Por favor, forneça um arquivo .txt válido.";Read-Host
+            $attempt_count++            
+        }
+        if($attempt_count -ge 5){
+            Write-Warning "Muitas tentativas sem exito , verifique se o arquivo exite e terminado em .txt." 
+            Write-Warning "Saindo da função...."
+            return
+        }
+    }while(-not (Test-Path $FilePath) -or (Get-Item $FilePath).Extension -ne ".txt")
     # Ler o arquivo e processa cada linha
     $apps = Get-Content $FilePath | Where-Object { 
         $_.Trim() -ne "" -and $_.Trim() -notlike "#*" 
@@ -160,7 +167,7 @@ function InstallAppsTxt{
     $failedApps = @()
     
     # Instalar usando Winget
-    if (Ensure-Winget) {
+    if (Checking_winget) {
         # Verificar se winget está disponível
         if (Get-Command winget -ErrorAction SilentlyContinue) {
             Write-Host "Instalando aplicativos usando Winget..." -ForegroundColor Cyan
@@ -203,8 +210,6 @@ function InstallAppsTxt{
         Write-Host "Aplicativos que falharam na instalação:" -ForegroundColor Red
         $failedApps | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
     }
-}
-
 }
 
 # Função para o menu de Systema
@@ -345,7 +350,8 @@ function Utilities {
 }
 
 
-function Ensure-Winget {
+# FUNÇÃO PARA VERIFICAR E INSTALAR WINGET
+function Checking_winget {
     try {
         # Verifica se o comando winget está disponível
         if (Get-Command winget -ErrorAction SilentlyContinue) {
@@ -365,10 +371,9 @@ function Ensure-Winget {
             Write-Host "Winget instalado com sucesso." -ForegroundColor Yellow
             return $true
         }
-    }
-    catch {
+    }catch {
         # Trata erros de instalação
-        Write-Error "Erro ao verificar ou instalar Winget: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Warning "Erro ao verificar ou instalar Winget: $($_.Exception.Message)" 
         return $false
     }
 }
