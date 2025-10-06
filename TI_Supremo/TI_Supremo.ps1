@@ -6,13 +6,13 @@ $host.UI.RawUI.ForegroundColor = "Green"
 Clear-Host
 
 # Verifica se a sessão é Administrador
-if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltinRole] "Administrator"))
-{
-    # Se não for admin, relança o script com privilégios elevados
-    $argList = "-NoProfile -ExecutionPolicy Bypass -File `"" + $MyInvocation.MyCommand.Path + "`""
-    Start-Process powershell -Verb RunAs -ArgumentList $argList
-    exit
-}
+# if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltinRole] "Administrator"))
+# {
+#     # Se não for admin, relança o script com privilégios elevados
+#     $argList = "-NoProfile -ExecutionPolicy Bypass -File `"" + $MyInvocation.MyCommand.Path + "`""
+#     Start-Process powershell -Verb RunAs -ArgumentList $argList
+#     exit
+# }
 
 # Configuração inteligente do buffer
 $host.UI.RawUI.BufferSize = New-Object System.Management.Automation.Host.Size(65, 500)
@@ -56,7 +56,11 @@ function MainMenu {
             "0" { $running = $false }
             default { Write-Output "Opcao invalida. Pressione Enter para tentar novamente."; Read-Host }
         }
-    } while ($running)
+    } while ($running){
+        Clear-Host
+        Write-Output "Saindo da ferramenta. Ate mais!"
+        Start-Sleep -Seconds 3
+    }
 }
 
 # Função para o menu de Aplicativos
@@ -99,6 +103,10 @@ function Aplications {
             default { Write-Output "Opcao invalida. Pressione Enter para tentar novamente."; Read-Host }
         }
     } while ($running)
+        Clear-Host
+        Write-Output "Saindo da ferramenta. Ate mais!"
+        Start-Sleep -Seconds 3
+    
 }
 # FUNÇÕES DE APLICATIVOS
 # Função para instalar aplicativos a partir de um arquivo apps.txt
@@ -139,6 +147,9 @@ function InstallAppsTxt{
             return
         }
     }while(-not (Test-Path $FilePath) -or (Get-Item $FilePath).Extension -ne ".txt")
+        Clear-Host
+        Write-Output "Arquivo encontrado: $FilePath"
+    
     # Ler o arquivo e processa cada linha
     $apps = Get-Content $FilePath | Where-Object { 
         $_.Trim() -ne "" -and $_.Trim() -notlike "#*" 
@@ -186,13 +197,11 @@ function InstallAppsTxt{
                         $failCount++
                         $failedApps += $app
                     }
-                }
-                catch {
+                }catch {
                     Write-Host "✗ Erro ao instalar $app : $($_.Exception.Message)" -ForegroundColor Red
                     $failCount++
                     $failedApps += $app
                 }
-                
                 Start-Sleep -Seconds 2  # Pequena pausa entre instalações
             }
         } else {
@@ -249,7 +258,11 @@ function System {
             "0" { $running = $false }
             default { Write-Output "Opcao invalida. Pressione Enter para tentar novamente."; Read-Host }
         }
-    } while ($running)
+    } while ($running){
+        Clear-Host
+        Write-Output "Saindo da ferramenta. Ate mais!"
+        Start-Sleep -Seconds 3
+    }
    
 }
 
@@ -294,7 +307,11 @@ function Network {
             "0"  { $running = $false }
             default { Write-Output "Opcao invalida. Pressione Enter para tentar novamente."; Read-Host }
         }
-    } while ($running)
+    } while ($running){
+        Clear-Host
+        Write-Output "Saindo da ferramenta. Ate mais!"
+        Start-Sleep -Seconds 3
+    }
    
 }
 
@@ -345,7 +362,11 @@ function Utilities {
             "0"  { $running = $false }
             default { Write-Output "Opcao invalida. Pressione Enter para tentar novamente."; Read-Host }
         }
-    } while ($running)
+    } while ($running){
+        Clear-Host
+        Write-Output "Saindo da ferramenta. Ate mais!"
+        Start-Sleep -Seconds 3
+    }
    
 }
 
