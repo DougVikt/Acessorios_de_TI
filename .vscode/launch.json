@@ -9,7 +9,10 @@
             "type": "PowerShell",
             "request": "launch",
             "script": "${file}",
-            "args": []
+            "args": [
+                "-ExecutionPolicy",
+                "Bypass"
+            ]
         }
     ]
 }

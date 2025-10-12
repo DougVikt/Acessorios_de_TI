@@ -3,7 +3,8 @@ $Host.UI.RawUI.WindowTitle = "TI Supremo - Ferramenta do TI"
 # Configurar cores do console
 $host.UI.RawUI.BackgroundColor = "Black"
 $host.UI.RawUI.ForegroundColor = "Green"
-Clear-Host
+# define o tamanho da janela do PowerShell
+$host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(65, 40)
 
 # Verifica se a sessão é Administrador
 # if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltinRole] "Administrator"))
@@ -13,22 +14,6 @@ Clear-Host
 #     Start-Process powershell -Verb RunAs -ArgumentList $argList
 #     exit
 # }
-
-# Configuração inteligente do buffer
-$host.UI.RawUI.BufferSize = New-Object System.Management.Automation.Host.Size(65, 500)
-$host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(65, 40)
-
-# Função para ajustar buffer automaticamente
-function Optimize-DisplayForContent {
-    param([int]$expectedLines = 500)
-    $currentBuffer = $host.UI.RawUI.BufferSize.Height
-    $neededBuffer = [Math]::Max($expectedLines * 2, 300)
-    
-    if ($currentBuffer -lt $neededBuffer) {
-        $host.UI.RawUI.BufferSize = New-Object System.Management.Automation.Host.Size(50, $neededBuffer)
-    }
-}
-
 # Função para exibir o menu principal
 function MainMenu {
     $running = $true
@@ -56,11 +41,7 @@ function MainMenu {
             "0" { $running = $false }
             default { Write-Output "Opcao invalida. Pressione Enter para tentar novamente."; Read-Host }
         }
-    } while ($running){
-        Clear-Host
-        Write-Output "Saindo da ferramenta. Ate mais!"
-        Start-Sleep -Seconds 3
-    }
+    } while ($running)
 }
 
 # Função para o menu de Aplicativos
@@ -103,9 +84,6 @@ function Aplications {
             default { Write-Output "Opcao invalida. Pressione Enter para tentar novamente."; Read-Host }
         }
     } while ($running)
-        Clear-Host
-        Write-Output "Saindo da ferramenta. Ate mais!"
-        Start-Sleep -Seconds 3
     
 }
 # FUNÇÕES DE APLICATIVOS
@@ -190,15 +168,15 @@ function InstallAppsTxt{
                     winget install --id $app --silent --accept-package-agreements --accept-source-agreements
                     
                     if ($LASTEXITCODE -eq 0) {
-                        Write-Host "✓ $app instalado com sucesso" -ForegroundColor Green
+                        Write-Host "$app instalado com sucesso" -ForegroundColor Green
                         $successCount++
                     } else {
-                        Write-Host "✗ Falha ao instalar $app" -ForegroundColor Red
+                        Write-Host "Falha ao instalar $app" -ForegroundColor Red
                         $failCount++
                         $failedApps += $app
                     }
                 }catch {
-                    Write-Host "✗ Erro ao instalar $app : $($_.Exception.Message)" -ForegroundColor Red
+                    Write-Host "Erro ao instalar $app : $($_.Exception.Message)" -ForegroundColor Red
                     $failCount++
                     $failedApps += $app
                 }
@@ -258,11 +236,7 @@ function System {
             "0" { $running = $false }
             default { Write-Output "Opcao invalida. Pressione Enter para tentar novamente."; Read-Host }
         }
-    } while ($running){
-        Clear-Host
-        Write-Output "Saindo da ferramenta. Ate mais!"
-        Start-Sleep -Seconds 3
-    }
+    } while ($running)
    
 }
 
@@ -307,11 +281,7 @@ function Network {
             "0"  { $running = $false }
             default { Write-Output "Opcao invalida. Pressione Enter para tentar novamente."; Read-Host }
         }
-    } while ($running){
-        Clear-Host
-        Write-Output "Saindo da ferramenta. Ate mais!"
-        Start-Sleep -Seconds 3
-    }
+    } while ($running)
    
 }
 
@@ -321,11 +291,11 @@ function Utilities {
     do {
         clear-Host
         Write-Output "================================================================"
-        Write-Output "  	              MENU FERRAMENTAS DE UTILITÁRIOS"
+        Write-Output "  	              MENU FERRAMENTAS DE UTILITARIOS"
         Write-Output "================================================================"
         Write-Output ""
         Write-Output "          [ 1 ] = VERIFICAR USO DE DISCO"
-        Write-Output "          [ 2 ] = VERIFICAR USO DE MEMÓRIA"
+        Write-Output "          [ 2 ] = VERIFICAR USO DE MEMORIA"
         Write-Output "          [ 3 ] = VERIFICAR USO DE CPU"
         Write-Output "          [ 4 ] = LIMPAR ARQUIVOS TEMP"
         Write-Output "          [ 5 ] = VERIFICAR SERVIÇOS DO SISTEMA"
@@ -362,12 +332,7 @@ function Utilities {
             "0"  { $running = $false }
             default { Write-Output "Opcao invalida. Pressione Enter para tentar novamente."; Read-Host }
         }
-    } while ($running){
-        Clear-Host
-        Write-Output "Saindo da ferramenta. Ate mais!"
-        Start-Sleep -Seconds 3
-    }
-   
+    } while ($running)
 }
 
 
