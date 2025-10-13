@@ -7,13 +7,13 @@ $host.UI.RawUI.ForegroundColor = "Green"
 $host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(65, 40)
 
 # Verifica se a sessão é Administrador
-# if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltinRole] "Administrator"))
-# {
-#     # Se não for admin, relança o script com privilégios elevados
-#     $argList = "-NoProfile -ExecutionPolicy Bypass -File `"" + $MyInvocation.MyCommand.Path + "`""
-#     Start-Process powershell -Verb RunAs -ArgumentList $argList
-#     exit
-# }
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltinRole] "Administrator"))
+{
+    # Se não for admin, relança o script com privilégios elevados
+    $argList = "-NoProfile -ExecutionPolicy Bypass -File `"" + $MyInvocation.MyCommand.Path + "`""
+    Start-Process powershell -Verb RunAs -ArgumentList $argList
+    exit
+}
 # Função para exibir o menu principal
 function MainMenu {
     $running = $true
@@ -86,7 +86,7 @@ function Aplications {
     } while ($running)
     
 }
-# FUNÇÕES DE APLICATIVOS
+# ====================== FUNÇÕES DE APLICATIVOS ========================
 # Função para instalar aplicativos a partir de um arquivo apps.txt
 function InstallAppsTxt{
     [CmdletBinding()]
@@ -94,12 +94,17 @@ function InstallAppsTxt{
         [Parameter(Mandatory=$false)]
         [switch]$Force = $false
     )
-    Clear-Host
+     Clear-Host
+    Write-Output "================================================================"
+    Write-Output "              PROGRAMAS INSTALADOS VIA ARQUIVO TXT"
+    Write-Output "================================================================"
+    Write-Output ""
     Write-Output " Verifique se o arquivo apps.txt está no mesmo diretório do script e contém os IDs corretos dos aplicativos."
     Write-Output " Ex: # Navegadores"
     Write-Output "      Google.Chrome"
     # Obtém o diretório do script atual
-    $scriptDirectory = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent   
+    $scriptDirectory = Get-ScriptDirectory  
+    # Inicializa a contagem de tentativas 
     $attempt_count = 0
     # Verifica se o arquivo existe
     do{ 
@@ -198,6 +203,75 @@ function InstallAppsTxt{
         $failedApps | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
     }
 }
+
+# Função para verificar programas instalados
+function CheckInstalledApps {
+    Clear-Host
+    Write-Output "================================================================"
+    Write-Output "              VERIFICANDO PROGRAMAS INSTALADOS"
+    Write-Output "================================================================"
+    Write-Output ""
+
+    # Verifica se o winget está disponível
+    if (Checking_winget) {
+        if (Get-Command winget -ErrorAction SilentlyContinue) {
+            Write-Host "Coletando lista de programas instalados..." -ForegroundColor Cyan
+            try {
+                # Executa o comando winget list para obter os programas instalados
+                $installedApps = winget list --accept-source-agreements | Out-String
+                $apps = $installedApps -split "`n" | Where-Object { $_ -match "^\S" } | ForEach-Object {
+                    $columns = $_ -split "\s{2,}"
+                    if ($columns.Count -ge 4) {
+                        [PSCustomObject]@{
+                            Name    = $columns[0].Trim()
+                            ID      = $columns[1].Trim()
+                            Version = $columns[2].Trim()
+                            Source  = $columns[3].Trim()
+                        }
+                    }
+                }
+
+                if ($apps.Count -eq 0) {
+                    Write-Warning "Nenhum programa encontrado."
+                    Write-Output "Pressione Enter para continuar."; Read-Host
+                    return
+                }
+
+                Write-Host "Total de programas instalados: $($apps.Count)" -ForegroundColor Magenta
+                Write-Output ""
+                Write-Host "Lista de Programas Instalados:" -ForegroundColor Yellow
+                Write-Output "------------------------------------------------------------"
+                $apps | Format-Table -Property Name, ID, Version, Source -AutoSize | Out-Host
+
+                # Opção para salvar a lista
+                $saveChoice = Read-Host "Deseja salvar a lista em um arquivo? (S/N)"
+                if ($saveChoice -match '^[SsYy]') {
+                    # Obtém o diretório do script atual
+                    $scriptDirectory = Get-ScriptDirectory
+                    $filePath = Join-Path -Path $scriptDirectory -ChildPath "installed_apps_$(Get-Date -Format 'yyyyMMdd_HHmmss').txt"
+                    try {
+                        # Adiciona um comentário inicial e filtra apenas IDs válidos
+                        "# Lista de aplicativos instalados gerada em $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" | Out-File -FilePath $filePath -Encoding UTF8 -ErrorAction Stop
+                        $apps | Where-Object { $_.ID -notmatch "^(ARP\\|MSIX\\)" -and $_.Source -eq "winget" } | 
+                            Select-Object -ExpandProperty ID | Out-File -FilePath $filePath -Append -Encoding UTF8 -ErrorAction Stop
+                        Write-Host "Lista de IDs salva em: $filePath" -ForegroundColor Green
+                    } catch {
+                        Write-Warning "Erro ao salvar o arquivo TXT: $($_.Exception.Message)"
+                    }
+                }
+            } catch {
+                Write-Warning "Erro ao verificar programas instalados: $($_.Exception.Message)"
+            }
+        } else {
+            Write-Warning "Winget nao encontrado. Nao e possivel listar os programas."
+        }
+    } else {
+        Write-Warning "Falha ao verificar ou instalar o Winget."
+    }
+    Write-Output ""
+    Write-Output "Pressione Enter para continuar."; Read-Host
+}
+
 
 # Função para o menu de Systema
 function System {
@@ -345,8 +419,8 @@ function Checking_winget {
             return $true
         }
         else {
-            Write-Warning "Winget não encontrado. Tentando instalar..."
-
+            Write-Warning "Winget nao encontrado. Tentando instalar...`n"
+            
             # Tenta instalar o módulo Microsoft.WinGet.Client via PowerShell Gallery
             Install-PackageProvider -Name NuGet -Force -ErrorAction Stop | Out-Null
             Install-Module -Name Microsoft.WinGet.Client -Force -ErrorAction Stop | Out-Null
@@ -362,6 +436,26 @@ function Checking_winget {
         Write-Warning "Erro ao verificar ou instalar Winget: $($_.Exception.Message)" 
         return $false
     }
+}
+
+# FUNÇÃO PARA VERRIFICAR O DIRETORIO DO SCRIPT
+function Get-ScriptDirectory {
+    # Tenta obter o diretório do script atual
+    try {
+        $scriptDirectory = Split-Path -Path $PSCommandPath -Parent -ErrorAction Stop
+    } catch {
+        Write-Warning "Não foi possível obter o diretório do script: $($_.Exception.Message)"
+        # Fallback para a área de trabalho do usuário
+        $scriptDirectory = [Environment]::GetFolderPath("Desktop")
+        Write-Host "Usando a área de trabalho como diretório padrão: $scriptDirectory" -ForegroundColor Yellow
+    }
+
+    # Verifica se o diretório existe
+    if (-not (Test-Path $scriptDirectory)) {
+        Write-Warning "Diretório não encontrado: $scriptDirectory. Salvando na área de trabalho."
+        $scriptDirectory = [Environment]::GetFolderPath("Desktop")
+    }
+    return $scriptDirectory
 }
 
 MainMenu
