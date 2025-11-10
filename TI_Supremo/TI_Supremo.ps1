@@ -14,6 +14,7 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     Start-Process powershell -Verb RunAs -ArgumentList $argList
     exit
 }
+# =============================== FUNÇÃO PRINCIPAL ================================
 # Função para exibir o menu principal
 function MainMenu {
     $running = $true
@@ -43,8 +44,8 @@ function MainMenu {
         }
     } while ($running)
 }
-
-# Função para o menu de Aplicativos
+# ============================= FUNÇÕES DE APLICATIVOS ===============================
+# Função para o menu principal de Aplicativos
 function Aplications {
     $running = $true
     do {
@@ -56,13 +57,12 @@ function Aplications {
         Write-Output "          [ 1 ]  = INSTALAR PROGRAMAS DO ARQUIVO TXT" 
         Write-Output "          [ 2 ]  = VERIFICAR PROGRAMAS INSTALADOS"
         Write-Output "          [ 3 ]  = ATUALIZAR PROGRAMAS INSTALADOS"
-        Write-Output "          [ 4 ]  = SALVAR LISTA DOS INSTALADOS EM ARQUIVO"
-        Write-Output "          [ 5 ]  = DESINSTALAR PROGRAMAS ESPECIFICOS"
-        Write-Output "          [ 6 ]  = REPARAR PROGRAMAS INSTALADOS " 
-        Write-Output "          [ 7 ]  = LIMPAR CACHE DE APLICATIVOS"
-        Write-Output "          [ 8 ]  = VERIFICAR PROGRAMAS COM INICIAL AUTOMATICA"
-        Write-Output "          [ 9 ]  = OTIMIZAR INICIALIZACAO DE PROGRAMAS"
-        Write-Output "          [ 10 ] = VERIFICAR APLICATIVOS VULNERAVEIS"
+        Write-Output "          [ 4 ]  = DESINSTALAR PROGRAMAS ESPECIFICOS"
+        Write-Output "          [ 5 ]  = REPARAR PROGRAMAS INSTALADOS " 
+        Write-Output "          [ 6 ]  = LIMPAR CACHE DE APLICATIVOS"
+        Write-Output "          [ 7 ]  = VERIFICAR PROGRAMAS COM INICIAL AUTOMATICA"
+        Write-Output "          [ 8 ]  = OTIMIZAR INICIALIZACAO DE PROGRAMAS"
+        Write-Output "          [ 9 ] = VERIFICAR APLICATIVOS VULNERAVEIS"
         Write-Output "          [ 0 ]  = VOLTAR AO MENU PRINCIPAL "   
         Write-Output ""
         # Solicita a escolha do usuário
@@ -73,20 +73,19 @@ function Aplications {
             "1"  { InstallAppsTxt }
             "2"  { CheckInstalledApps }
             "3"  { UpdateInstalledApps }
-            "4"  { SaveInstalledAppsList }
-            "5"  { UninstallSpecificApps }
-            "6"  { RepairInstalledApps }
-            "7"  { ClearAppCache }
-            "8"  { CheckStartupApps }
-            "9"  { OptimizeStartupApps }
-            "10" { CheckVulnerableApps }
+            "4"  { UninstallSpecificApps }
+            "5"  { RepairInstalledApps }
+            "6"  { ClearAppCache }
+            "7"  { CheckStartupApps }
+            "8"  { OptimizeStartupApps }
+            "9" { CheckVulnerableApps }
             "0"  { $running = $false }
             default { Write-Output "Opcao invalida. Pressione Enter para tentar novamente."; Read-Host }
         }
     } while ($running)
     
 }
-# ====================== FUNÇÕES DE APLICATIVOS ========================
+
 # Função para instalar aplicativos a partir de um arquivo apps.txt
 function InstallAppsTxt{
     [CmdletBinding()]
@@ -217,7 +216,64 @@ function CheckInstalledApps {
         if (Get-Command winget -ErrorAction SilentlyContinue) {
             Write-Host "Coletando lista de programas instalados..." -ForegroundColor Cyan
             try {
-                # Executa o comando winget list para obter os programas instalados
+                $apps = VerifyApps
+                 # Adiciona uma coluna numerada para exibição
+                $appsWithIndex = $apps | ForEach-Object -Begin { $index = 1 } -Process {
+                    $_ | Add-Member -MemberType NoteProperty -Name "Nº" -Value $index -PassThru
+                    $index++
+                }
+                
+                Write-Host "Total de programas instalados: $($apps.Count)" -ForegroundColor Magenta
+                Write-Output ""
+                Write-Host "Lista de Programas Instalados:" -ForegroundColor Yellow
+                Write-Output "------------------------------------------------------------"
+                $appsWithIndex | Format-Table -Property "Nº", Name, ID, Version, Source -AutoSize | Out-Host
+
+                # Opção para salvar a lista
+                $saveChoice = Read-Host "Deseja salvar a lista em um arquivo? (S/N)"
+                if ($saveChoice -match '^[SsYy]') {
+                    # Obtém o diretório do script atual
+                    $scriptDirectory = Get-ScriptDirectory
+                    $filePath = Join-Path -Path $scriptDirectory -ChildPath "installed_apps_$(Get-Date -Format 'dd_MM_yyyy').txt"
+                    try {
+                        # Adiciona um comentário inicial e informações detalhadas como comentários
+                        "# Lista de aplicativos instalados gerada em $(Get-Date -Format 'dd_MM_yyyy HH:mm:ss')" | Out-File -FilePath $filePath -Encoding UTF8 -ErrorAction Stop
+                        "# Formato: ID , Versao" | Out-File -FilePath $filePath -Append -Encoding UTF8
+                        $apps | ForEach-Object {
+                            "$($_.ID),$($_.Version)" | Out-File -FilePath $filePath -Append -Encoding UTF8
+                        }
+                        Write-Host "Lista de IDs com detalhes salva em: $filePath" -ForegroundColor Green
+                    } catch {
+                        Write-Warning "Erro ao salvar o arquivo TXT: $($_.Exception.Message)"
+                    }
+                }
+            } catch {
+                Write-Warning "Erro ao verificar programas instalados: $($_.Exception.Message)"
+            }
+        } else {
+            Write-Warning "Winget nao encontrado. Nao e possivel listar os programas."
+        }
+    } else {
+        Write-Warning "Falha ao verificar ou instalar o Winget."
+    }
+    Write-Output ""
+    Write-Output "Pressione Enter para continuar."; Read-Host
+}
+
+# Função para atualizar programas instalados
+function UpdateInstalledApps {
+    Clear-Host
+    Write-Output "================================================================"
+    Write-Output "              ATUALIZANDO PROGRAMAS INSTALADOS"
+    Write-Output "================================================================"
+    Write-Output ""
+
+    # Verifica se o winget está disponível
+    if (Checking_winget) {
+        if (Get-Command winget -ErrorAction SilentlyContinue) {
+            Write-Host "Coletando lista de programas instalados e verificando atualizações..." -ForegroundColor Cyan
+            try {
+                # Obtém a lista de programas instalados
                 $installedApps = winget list --accept-source-agreements | Out-String
                 $apps = $installedApps -split "`n" | Where-Object { $_ -match "^\S" } | ForEach-Object {
                     $columns = $_ -split "\s{2,}"
@@ -237,33 +293,156 @@ function CheckInstalledApps {
                     return
                 }
 
-                Write-Host "Total de programas instalados: $($apps.Count)" -ForegroundColor Magenta
-                Write-Output ""
-                Write-Host "Lista de Programas Instalados:" -ForegroundColor Yellow
-                Write-Output "------------------------------------------------------------"
-                $apps | Format-Table -Property Name, ID, Version, Source -AutoSize | Out-Host
+                # Obtém a lista de atualizações disponíveis
+                $upgradableApps = winget upgrade --accept-source-agreements | Out-String
+                $updates = $upgradableApps -split "`n" | Where-Object { $_ -match "^\S" } | ForEach-Object {
+                    $columns = $_ -split "\s{2,}"
+                    if ($columns.Count -ge 5) {
+                        [PSCustomObject]@{
+                            Name        = $columns[0].Trim()
+                            ID          = $columns[1].Trim()
+                            Version     = $columns[2].Trim()
+                            Available   = $columns[3].Trim()
+                            Source      = $columns[4].Trim()
+                        }
+                    }
+                }
 
-                # Opção para salvar a lista
-                $saveChoice = Read-Host "Deseja salvar a lista em um arquivo? (S/N)"
-                if ($saveChoice -match '^[SsYy]') {
-                    # Obtém o diretório do script atual
+                if ($updates.Count -eq 0) {
+                    Write-Host "Nenhum programa com atualizações disponíveis." -ForegroundColor Green
+                    Write-Output "Pressione Enter para continuar."; Read-Host
+                    return
+                }
+
+                # Adiciona uma coluna numerada para exibição
+                $updatesWithIndex = $updates | ForEach-Object -Begin { $index = 1 } -Process {
+                    $_ | Add-Member -MemberType NoteProperty -Name "Nº" -Value $index -PassThru
+                    $index++
+                }
+
+                Write-Host "Total de programas com atualizações disponíveis: $($updates.Count)" -ForegroundColor Magenta
+                Write-Output ""
+                Write-Host "Lista de Atualizações Disponíveis:" -ForegroundColor Yellow
+                Write-Output "------------------------------------------------------------"
+                $updatesWithIndex | Format-Table -Property "Nº", Name, ID, Version, Available, Source -AutoSize | Out-Host
+
+                # Pergunta se o usuário quer atualizar todos ou selecionar
+                $updateChoice = Read-Host "Deseja atualizar todos os programas listados? (S/N) [N para selecionar específicos]"
+                if ($updateChoice -match '^[SsYy]') {
+                    # Atualiza todos os programas
+                    Write-Host "Atualizando todos os programas..." -ForegroundColor Cyan
+                    $successCount = 0
+                    $failCount = 0
+                    $failedApps = @()
+                    foreach ($app in $updates) {
+                        Write-Host "Atualizando: $($app.Name) ($($app.ID))" -ForegroundColor White
+                        try {
+                            winget upgrade --id $app.ID --silent --accept-package-agreements --accept-source-agreements
+                            if ($LASTEXITCODE -eq 0) {
+                                Write-Host "$($app.Name) atualizado com sucesso para a versão $($app.Available)" -ForegroundColor Green
+                                $successCount++
+                            } else {
+                                Write-Host "Falha ao atualizar $($app.Name)" -ForegroundColor Red
+                                $failCount++
+                                $failedApps += $app.Name
+                            }
+                        } catch {
+                            Write-Host "Erro ao atualizar $($app.Name): $($_.Exception.Message)" -ForegroundColor Red
+                            $failCount++
+                            $failedApps += $app.Name
+                        }
+                        Start-Sleep -Seconds 2
+                    }
+
+                    # Resumo da atualização
+                    Write-Host "=== RESUMO DA ATUALIZAÇÃO ===" -ForegroundColor Magenta
+                    Write-Host "Programas atualizados com sucesso: $successCount" -ForegroundColor Green
+                    Write-Host "Programas com falha: $failCount" -ForegroundColor Red
+                    if ($failedApps.Count -gt 0) {
+                        Write-Host "Programas que falharam:" -ForegroundColor Red
+                        $failedApps | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
+                    }
+                } else {
+                    # Seleção de aplicativos específicos
+                    Write-Host "Digite os números (Nº) dos programas que deseja atualizar (ex: 1,3,5 ou 1-3):"
+                    $selection = Read-Host "Seleção"
+                    $selectedIndices = @()
+                    foreach ($item in $selection -split ',') {
+                        if ($item -match '^\d+$') {
+                            $selectedIndices += [int]$item
+                        } elseif ($item -match '^(\d+)-(\d+)$') {
+                            $start, $end = $item -split '-'
+                            $selectedIndices += [int]$start..[int]$end
+                        }
+                    }
+                    $selectedIndices = $selectedIndices | Where-Object { $_ -ge 1 -and $_ -le $updates.Count } | Sort-Object -Unique
+
+                    if ($selectedIndices.Count -eq 0) {
+                        Write-Warning "Nenhuma seleção válida. Cancelando atualização."
+                        Write-Output "Pressione Enter para continuar."; Read-Host
+                        return
+                    }
+
+                    # Atualiza os programas selecionados
+                    Write-Host "Atualizando programas selecionados..." -ForegroundColor Cyan
+                    $successCount = 0
+                    $failCount = 0
+                    $failedApps = @()
+                    foreach ($index in $selectedIndices) {
+                        $app = $updatesWithIndex[$index - 1]
+                        Write-Host "Atualizando: $($app.Name) ($($app.ID))" -ForegroundColor White
+                        try {
+                            winget upgrade --id $app.ID --silent --accept-package-agreements --accept-source-agreements
+                            if ($LASTEXITCODE -eq 0) {
+                                Write-Host "$($app.Name) atualizado com sucesso para a versão $($app.Available)" -ForegroundColor Green
+                                $successCount++
+                            } else {
+                                Write-Host "Falha ao atualizar $($app.Name)" -ForegroundColor Red
+                                $failCount++
+                                $failedApps += $app.Name
+                            }
+                        } catch {
+                            Write-Host "Erro ao atualizar $($app.Name): $($_.Exception.Message)" -ForegroundColor Red
+                            $failCount++
+                            $failedApps += $app.Name
+                        }
+                        Start-Sleep -Seconds 2
+                    }
+
+                    # Resumo da atualização
+                    Write-Host "=== RESUMO DA ATUALIZAÇÃO ===" -ForegroundColor Magenta
+                    Write-Host "Programas atualizados com sucesso: $successCount" -ForegroundColor Green
+                    Write-Host "Programas com falha: $failCount" -ForegroundColor Red
+                    if ($failedApps.Count -gt 0) {
+                        Write-Host "Programas que falharam:" -ForegroundColor Red
+                        $failedApps += $app.Name
+                        $failedApps | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
+                    }
+                }
+
+                # Opção para salvar o log de atualizações
+                $logChoice = Read-Host "Deseja salvar um log das atualizações em um arquivo TXT? (S/N)"
+                if ($logChoice -match '^[SsYy]') {
                     $scriptDirectory = Get-ScriptDirectory
-                    $filePath = Join-Path -Path $scriptDirectory -ChildPath "installed_apps_$(Get-Date -Format 'yyyyMMdd_HHmmss').txt"
+                    $logPath = Join-Path -Path $scriptDirectory -ChildPath "update_log_$(Get-Date -Format 'yyyyMMdd_HHmmss').txt"
                     try {
-                        # Adiciona um comentário inicial e filtra apenas IDs válidos
-                        "# Lista de aplicativos instalados gerada em $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" | Out-File -FilePath $filePath -Encoding UTF8 -ErrorAction Stop
-                        $apps | Where-Object { $_.ID -notmatch "^(ARP\\|MSIX\\)" -and $_.Source -eq "winget" } | 
-                            Select-Object -ExpandProperty ID | Out-File -FilePath $filePath -Append -Encoding UTF8 -ErrorAction Stop
-                        Write-Host "Lista de IDs salva em: $filePath" -ForegroundColor Green
+                        "# Log de atualizações gerado em $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" | Out-File -FilePath $logPath -Encoding UTF8 -ErrorAction Stop
+                        "# Formato: Nº | Nome | ID | Versão Atual | Versão Disponível" | Out-File -FilePath $logPath -Append -Encoding UTF8
+                        $index = 1
+                        $updates | ForEach-Object {
+                            "# $index | $($_.Name) | $($_.ID) | $($_.Version) | $($_.Available)" | Out-File -FilePath $logPath -Append -Encoding UTF8
+                            $index++
+                        }
+                        Write-Host "Log de atualizações salvo em: $logPath" -ForegroundColor Green
                     } catch {
-                        Write-Warning "Erro ao salvar o arquivo TXT: $($_.Exception.Message)"
+                        Write-Warning "Erro ao salvar o log de atualizações: $($_.Exception.Message)"
                     }
                 }
             } catch {
-                Write-Warning "Erro ao verificar programas instalados: $($_.Exception.Message)"
+                Write-Warning "Erro ao verificar programas instalados ou atualizações: $($_.Exception.Message)"
             }
         } else {
-            Write-Warning "Winget nao encontrado. Nao e possivel listar os programas."
+            Write-Warning "Winget não encontrado. Não é possível listar ou atualizar programas."
         }
     } else {
         Write-Warning "Falha ao verificar ou instalar o Winget."
@@ -272,8 +451,185 @@ function CheckInstalledApps {
     Write-Output "Pressione Enter para continuar."; Read-Host
 }
 
+# Função para atualizar programas instalados
+function UpdateInstalledApps {
+    Clear-Host
+    Write-Output "================================================================"
+    Write-Output "              ATUALIZANDO PROGRAMAS INSTALADOS"
+    Write-Output "================================================================"
+    Write-Output ""
 
-# Função para o menu de Systema
+    # Verifica se o winget está disponível
+    if (Checking_winget) {
+        if (Get-Command winget -ErrorAction SilentlyContinue) {
+            Write-Host "Coletando lista de programas instalados e verificando atualizacoes..." -ForegroundColor Cyan
+            try {
+                $app = VerifyApps
+
+                # Obtém a lista de atualizações disponíveis
+                $upgradableApps = winget upgrade --accept-source-agreements | Out-String
+                $updates = $upgradableApps -split "`n" | Where-Object { $_ -match "^\S" } | ForEach-Object {
+                    $columns = $_ -split "\s{2,}"
+                    if ($columns.Count -ge 5) {
+                        [PSCustomObject]@{
+                            Name        = $columns[0].Trim()
+                            ID          = $columns[1].Trim()
+                            Version     = $columns[2].Trim()
+                            Available   = $columns[3].Trim()
+                            Source      = $columns[4].Trim()
+                        }
+                    }
+                }
+
+                if ($updates.Count -eq 0) {
+                    Write-Host "Nenhum programa com atualizacoes disponiveis." -ForegroundColor Green
+                    Write-Output "Pressione Enter para continuar."; Read-Host
+                    return
+                }
+
+                # Adiciona uma coluna numerada para exibição
+                $updatesWithIndex = $updates | ForEach-Object -Begin { $index = 1 } -Process {
+                    $_ | Add-Member -MemberType NoteProperty -Name "Nun" -Value $index -PassThru
+                    $index++
+                }
+
+                Write-Host "Total de programas com atualizacoes disponiveis: $($updates.Count)" -ForegroundColor Magenta
+                Write-Output ""
+                Write-Host "Lista de Atualizacoes Disponiveis:" -ForegroundColor Yellow
+                Write-Output "------------------------------------------------------------"
+                $updatesWithIndex | Format-Table -Property "Nun", Name, ID, Version, Available, Source -AutoSize | Out-Host
+
+                # Pergunta se o usuário quer atualizar todos ou selecionar
+                $updateChoice = Read-Host "Deseja atualizar todos os programas listados? (S/N) [N para selecionar especificos]"
+                if ($updateChoice -match '^[SsYy]') {
+                    # Atualiza todos os programas
+                    Write-Host "Atualizando todos os programas..." -ForegroundColor Cyan
+                    $successCount = 0
+                    $failCount = 0
+                    $failedApps = @()
+                    foreach ($app in $updates) {
+                        Write-Host "Atualizando: $($app.Name) ($($app.ID))" -ForegroundColor White
+                        try {
+                            winget upgrade --id $app.ID --silent --accept-package-agreements --accept-source-agreements
+                            if ($LASTEXITCODE -eq 0) {
+                                Write-Host "$($app.Name) atualizado com sucesso para a versao $($app.Available)" -ForegroundColor Green
+                                $successCount++
+                            } else {
+                                Write-Host "Falha ao atualizar $($app.Name)" -ForegroundColor Red
+                                $failCount++
+                                $failedApps += $app.Name
+                            }
+                        } catch {
+                            Write-Host "Erro ao atualizar $($app.Name): $($_.Exception.Message)" -ForegroundColor Red
+                            $failCount++
+                            $failedApps += $app.Name
+                        }
+                        Start-Sleep -Seconds 2
+                    }
+
+                    # Resumo da atualização
+                    Write-Host "=== RESUMO DA ATUALIZACAO ===" -ForegroundColor Magenta
+                    Write-Host "Programas atualizados com sucesso: $successCount" -ForegroundColor Green
+                    Write-Host "Programas com falha: $failCount" -ForegroundColor Red
+                    if ($failedApps.Count -gt 0) {
+                        Write-Host "Programas que falharam:" -ForegroundColor Red
+                        $failedApps | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
+                    }
+                } else {
+                    # Seleção de aplicativos específicos
+                    Write-Host "Digite os numeros dos programas que deseja atualizar `n EX: 2,3,5 para individual ou 2-4 para intervalos" -ForegroundColor Yellow
+                    $selection = Read-Host "Selecao"
+                    $selectedIndices = @()
+                    # Processa a seleção do usuário permitindo múltiplos formatos
+                    foreach ($item in $selection -split ',') {
+                        if ($item -match '^\d+$') {
+                            $selectedIndices += [int]$item
+                        } elseif ($item -match '^(\d+)-(\d+)$') {
+                            $start, $end = $item -split '-'
+                            $selectedIndices += [int]$start..[int]$end
+                        }
+                    }
+                    # Filtra índices inválidos e remove duplicatas
+                    $selectedIndices = $selectedIndices | Where-Object { $_ -ge 1 -and $_ -le $updates.Count } | Sort-Object -Unique
+
+                    if ($selectedIndices.Count -eq 0) {
+                        Write-Warning "Nenhuma selecao valida. Cancelando atualizacao."
+                        Write-Output "Pressione Enter para continuar."; Read-Host
+                        return
+                    }
+
+                    # Atualiza os programas selecionados
+                    Write-Host "Atualizando programas selecionados..." -ForegroundColor Cyan
+                    $successCount = 0
+                    $failCount = 0
+                    $failedApps = @()
+                    # Itera sobre os índices selecionados
+                    foreach ($index in $selectedIndices) {
+                        $app = $updatesWithIndex[$index - 1]
+                        Write-Host "Atualizando: $($app.Name) ($($app.ID))" -ForegroundColor White
+                        # Tenta atualizar o aplicativo e captura erros
+                        try {
+                            winget upgrade --id $app.ID --silent --accept-package-agreements --accept-source-agreements
+                            if ($LASTEXITCODE -eq 0) {
+                                Write-Host "$($app.Name) atualizado com sucesso para a versao $($app.Available)" -ForegroundColor Green
+                                $successCount++
+                            } else {
+                                Write-Host "Falha ao atualizar $($app.Name)" -ForegroundColor Red
+                                $failCount++
+                                $failedApps += $app.Name
+                            }
+                        } catch {
+                            Write-Host "Erro ao atualizar $($app.Name): $($_.Exception.Message)" -ForegroundColor Red
+                            $failCount++
+                            $failedApps += $app.Name
+                        }
+                        Start-Sleep -Seconds 2
+                    }
+
+                    # Resumo da atualização
+                    Write-Host "=== RESUMO DA ATUALIZAÇÃO ===" -ForegroundColor Magenta
+                    Write-Host "Programas atualizados com sucesso: $successCount" -ForegroundColor Green
+                    Write-Host "Programas com falha: $failCount" -ForegroundColor Red
+                    if ($failedApps.Count -gt 0) {
+                        Write-Host "Programas que falharam:" -ForegroundColor Red
+                        $failedApps += $app.Name
+                        $failedApps | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
+                    }
+                }
+
+                # Opção para salvar o log de atualizações
+                $logChoice = Read-Host "Deseja salvar um log das atualizacoes em um arquivo TXT? (S/N)"
+                if ($logChoice -match '^[SsYy]') {
+                    $scriptDirectory = Get-ScriptDirectory
+                    $logPath = Join-Path -Path $scriptDirectory -ChildPath "update_log_$(Get-Date -Format 'dd_MM_yyyy').txt"
+                    try {
+                        "# Log de atualizacoes gerado em $(Get-Date -Format 'dd-MM-yyyy HH:mm:ss')" | Out-File -FilePath $logPath -Encoding UTF8 -ErrorAction Stop
+                        "# Formato: N° | Nome | ID | Versao Atual | Versao Disponivel" | Out-File -FilePath $logPath -Append -Encoding UTF8
+                        $index = 1
+                        $updates | ForEach-Object {
+                            "# $index | $($_.Name) | $($_.ID) | $($_.Version) | $($_.Available)" | Out-File -FilePath $logPath -Append -Encoding UTF8
+                            $index++
+                        }
+                        Write-Host "Log de atualizacoes salvo em: $logPath" -ForegroundColor Green
+                    } catch {
+                        Write-Warning "Erro ao salvar o log de atualizacoes: $($_.Exception.Message)"
+                    }
+                }
+            } catch {
+                Write-Warning "Erro ao verificar programas instalados ou atualizacoes: $($_.Exception.Message)"
+            }
+        } else {
+            Write-Warning "Winget nao encontrado. Nao e possivel listar ou atualizar programas."
+        }
+    } else {
+        Write-Warning "Falha ao verificar ou instalar o Winget."
+    }
+    Write-Output ""
+    Write-Output "Pressione Enter para continuar."; Read-Host
+}
+
+# ============================= FUNÇÕES DE SISTEMA ===================================
+# Função para o menu principal de Systema
 function System {
     $running = $true
     do {
@@ -314,7 +670,8 @@ function System {
    
 }
 
-# Função para o menu de Rede
+# ============================= FUNÇÕES DE REDE ======================================
+# Função para o menu principal de Rede
 function Network {
     $running = $true
     do {
@@ -359,7 +716,8 @@ function Network {
    
 }
 
-# Função para o menu de Utilitários
+# ============================= FUNÇÕES DE UTILITARIOS ===============================
+# Função para o menu principal de Utilitários
 function Utilities {
     $running = $true
     do {
@@ -382,6 +740,8 @@ function Utilities {
         Write-Output "          [ 12 ] = ATIVAR MODO DE SEGURANCA"
         Write-Output "          [ 13 ] = ATIVAR HIRBERNAR"
         Write-Output "          [ 14 ] = DESATIVAR HIBERNAR"
+        write-Output "          [ 15 ] = DESATIVAR MODO DE SEGURANCA"
+        write-Output "          [ 16 ] = DETALHES DO HARDWARE"
         Write-Output "          [ 0 ]  = VOLTAR AO MENU PRINCIPAL "   
         Write-Output ""
         # Solicita a escolha do usuário
@@ -389,20 +749,22 @@ function Utilities {
 
         # Chama a função correspondente à escolha do usuário
         switch ($choice) {
-           "1" { check_disk_usage }
-           "2" { check_memory_usage }
-           "3" { check_cpu_usage }
-           "4" { clear_temp_files }
-           "5" { check_system_services }
-           "6" { clean_registry }
-           "7" { disk_cleanup }
-           "8" { generate_system_report }
-           "9" { create_admin_user }
-           "10" { enable_builtin_admin }
-           "11" { disable_builtin_admin }
-           "12" { enable_safe_mode }
-           "13" { enable_hibernation }
-           "14" { disable_hibernation }
+            "1" { check_disk_usage }
+            "2" { check_memory_usage }
+            "3" { check_cpu_usage }
+            "4" { clear_temp_files }
+            "5" { check_system_services }
+            "6" { clean_registry }
+            "7" { disk_cleanup }
+            "8" { generate_system_report }
+            "9" { create_admin_user }
+            "10" { enable_builtin_admin }
+            "11" { disable_builtin_admin }
+            "12" { enable_safe_mode }
+            "13" { enable_hibernation }
+            "14" { disable_hibernation }
+            "15" { disable_safe_mode }
+            "16" { hardware_details }
             "0"  { $running = $false }
             default { Write-Output "Opcao invalida. Pressione Enter para tentar novamente."; Read-Host }
         }
@@ -410,6 +772,8 @@ function Utilities {
 }
 
 
+
+# =============================== FUNÇÕES GLOBAIS ===================================
 # FUNÇÃO PARA VERIFICAR E INSTALAR WINGET
 function Checking_winget {
     try {
@@ -457,5 +821,31 @@ function Get-ScriptDirectory {
     }
     return $scriptDirectory
 }
+
+# FUNÇÃO PARA VERIFICAR A LISTA DE PROGRAMAS INSTALADOS
+function VerifyApps{
+     # Obtém a lista de programas instalados
+    $installedApps = winget list --accept-source-agreements | Out-String
+    $apps = $installedApps -split "`n" | Where-Object { $_ -match "^\S" } | ForEach-Object {
+        $columns = $_ -split "\s{2,}"
+        if ($columns.Count -ge 4) {
+            [PSCustomObject]@{
+                Name    = $columns[0].Trim()
+                ID      = $columns[1].Trim()
+                Version = $columns[2].Trim()
+                Source  = $columns[3].Trim()
+            }
+        }
+    }
+
+    if ($apps.Count -eq 0) {
+        Write-Warning "Nenhum programa encontrado."
+        Write-Output "Pressione Enter para continuar."; Read-Host
+        return
+    } else {
+        return $apps
+    }
+}
+
 
 MainMenu
