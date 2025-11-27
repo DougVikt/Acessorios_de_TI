@@ -144,16 +144,17 @@ function UpdateUnistallApps {
     # ---------- Execução ----------
     $success = 0; $fail = 0; $failed = @()
     foreach ($idx in $selectedIdx) {
+        $app = $appsWithIdx[$idx-1]
         $appname = $app.Name
         $appId = $app.ID
-        $app = $appsWithIdx[$idx-1]
+        
         Write-Host "$($actionText)ando : $appname - $appId" -ForegroundColor White
         try {
             if ($Action -eq 'Update') {
                 winget upgrade --id $appId --accept-source-agreements --accept-package-agreements
             } else {
-                winget uninstall --id $appId --accept-source-agreements
-            
+                winget uninstall --id "$appId" --force --accept-source-agreements
+                
             }
 
             if ($LASTEXITCODE -eq 0) {
@@ -266,4 +267,3 @@ function FunctionHeader {
     Write-Output ""
 }
 
-UpdateUnistallApps -Action 'Uninstall'
