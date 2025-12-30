@@ -23,239 +23,104 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", $viewerScript
 # ====================================================================================
 
 
-function UpdateUnistallApps {
-    param(
-        [Parameter(Mandatory)]
-        [ValidateSet('Update','Uninstall')]
-        [string]$Action
-    )
-    # Define título para o cabeçalho
-    $title = if ($Action -eq 'Update') { 
-        "ATUALIZANDO PROGRAMAS INSTALADOS" 
-    }else { 
-        "DESINSTALANDO PROGRAMAS ESPECIFICOS" 
-    }
-    # Define texto de ação
-    $actionText = if ($Action -eq 'Update') { "atualiz" } else { "desinstal" }
+function Gerenciar-AppsInicializacao {   
+    # Obtém os itens de inicialização do registro (HKCU e HKLM)
+    $startupItems = @()
     # Exibe cabeçalho
-    FunctionHeader -title $title
-
-    # Verifica winget e obtém lista de apps
-    if (Checking_winget) { 
-        $apps = VerifyApps
-        if (-not $apps) { 
-            Write-Warning "Nenhum programa encontrado."; 
-            Read-Host "Enter"; 
-            return 
-        }
-    }else {
-        Write-Warning "Winget nao esta disponivel. Abortando."
-        Read-Host "Enter"; return
-    }    
-
-    # Ajusta lista de apps com atualização 
-    if ($Action -eq 'Update') {
-        Write-Host "Verificando atualizacoes..." -ForegroundColor Cyan
-        $upRaw = winget upgrade --accept-source-agreements | Out-String
-        $updates = $upRaw -split "`n" | Where-Object { $_ -match '^\s*\d+' -or $_ -match '\.\w'} | ForEach-Object {
-            $c = $_ -split '\s{2,}' -ne $null
-            if ($c.Count -ge 5) {
-                [pscustomobject]@{
-                    Name      = $c[0].Trim()
-                    ID        = $c[1].Trim()
-                    Version   = $c[2].Trim()
-                    Available = $c[3].Trim()
-                    Source    = $c[4].Trim()
+    FunctionHeader -title "GERENCIAR APLICATIVOS DE INICIALIZACAO"
+    
+    # Itens do usuário atual (HKCU)
+    $hkcuPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+    try {
+        if (Test-Path $hkcuPath) {
+            $hkcuItems = Get-ItemProperty -Path $hkcuPath -ErrorAction Stop
+            $hkcuItems.PSObject.Properties | Where-Object { $_.Name -ne "PSPath" -and $_.Name -ne "PSParentPath" -and $_.Name -ne "PSChildName" -and $_.Name -ne "PSDrive" -and $_.Name -ne "PSProvider" } | ForEach-Object {
+                $startupItems += [PSCustomObject]@{
+                    Nome = $_.Name
+                    Comando = $_.Value
+                    Local = "HKCU"
+                    Caminho = $hkcuPath
                 }
             }
         }
-
-        if (-not $updates) {
-            Write-Host "Nenhum programa com atualizacoes disponiveis." -ForegroundColor Green
-            Read-Host "Enter"; return
-        }
-        $apps = $updates   # a partir daqui $apps contém só os que podem ser atualizados
+    } catch {
+        Write-Host "Erro ao acessar itens de inicializacao do usuario (HKCU): $($_.Exception.Message)"
     }
-        
     
-
-    # ---------- Coluna numerada ----------
-    $appsWithIdx = $apps | ForEach-Object -Begin { $i = 1 } -Process {
+    # Itens do sistema (HKLM)
+    $hklmPath = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run"
+    try {
+        if (Test-Path $hklmPath) {
+            $hklmItems = Get-ItemProperty -Path $hklmPath -ErrorAction Stop
+            $hklmItems.PSObject.Properties | Where-Object { $_.Name -ne "PSPath" -and $_.Name -ne "PSParentPath" -and $_.Name -ne "PSChildName" -and $_.Name -ne "PSDrive" -and $_.Name -ne "PSProvider" } | ForEach-Object {
+                $startupItems += [PSCustomObject]@{
+                    Name = $_.Name
+                    Command = $_.Value
+                    Local = "HKLM"
+                }
+            }
+        }
+    } catch {
+        Write-Host "Erro ao acessar itens de inicializacao do sistema (HKLM): $($_.Exception.Message)"
+    }
+    
+    # Verifica se há itens
+    if ($startupItems.Count -eq 0) {
+        Write-Host "Nenhum aplicativo encontrado na inicializacao."
+        return
+    }
+    
+     $itemsInTable = $startupItems| ForEach-Object -Begin { $i = 1 } -Process {
         $_ | Add-Member -NotePropertyName 'Num' -NotePropertyValue $i -PassThru
         $i++
     }
-
-    # ---------- Exibição ----------
-    Write-Host "Total de itens: $($apps.Count)" -ForegroundColor Magenta
-    Write-Output ""
-    Write-Host "Lista de Programas:" -ForegroundColor Yellow
-    Write-Output ("-"*60)
-    if ($Action -eq 'Update') {
-        $appsWithIdx | Select-Object Num, Name, ID, Version, Available, Source | Format-Table -AutoSize | Out-Host
-    } else {
-        $appsWithIdx | Select-Object Num, Name, ID, Version, Source | Format-Table -AutoSize | Out-Host
+    # Exibe os itens na tela
+    # Write-Host "Aplicativos na inicializacao do sistema:"
+    # for ($i = 0; $i -lt $startupItems.Count; $i++) {
+    #     Write-Host "[$($i + 1)] - $($startupItems[$i].Nome)"
+    # }
+    $itemsInTable | Select-Object Num, Name | Format-Table -AutoSize | Out-Host
+    # Pergunta ao usuário
+    try {
+        $opcao = Read-Host "Digite 'todos' para remover todos,`n'selecionar' para escolher quais remover, ou 'nenhum' para sair"
+    } catch {
+        Write-Host "Erro ao ler entrada do usuario: $($_.Exception.Message)"
+        return
     }
-
-    # ---------- Selecao ----------
-    if ($Action -eq 'Update') {
-        $all = Read-Host "Atualizar TODOS os programas listados? (S/N) [N = escolher]"
-        if ($all -match '^[SsYy]') { 
-            $selectedIdx = 1..$apps.Count 
-        }elseif ($all -match '^[Nn]') {
-            $selectedIdx = $null
-        }else {
-            Write-Warning "Entrada invalida. Abortando."
-            Read-Host "Enter para retornar "; 
+    
+    if ($opcao -eq "todos") {
+        # Remove todos
+        foreach ($item in $startupItems) {
+            try {
+                Remove-ItemProperty -Path $item.Caminho -Name $item.Nome -ErrorAction Stop
+                Write-Host "Removido: $($item.Nome)"
+            } catch {
+                Write-Host "Erro ao remover $($item.Nome): $($_.Exception.Message)"
+            }
+        }
+    } elseif ($opcao -eq "selecionar") {
+        # Permite escolher quais remover
+        try {
+            $indices = Read-Host "Digite os números dos itens a remover (separados por vírgula, ex: 1,3,5)"
+        } catch {
+            Write-Host "Erro ao ler entrada do usuário: $($_.Exception.Message)"
             return
         }
-    }
-    if (-not $selectedIdx) {
-        Write-Host "Digite os numeros que deseja $($actionText)ar (ex: 1,3,5 ou 1-3):" -ForegroundColor Cyan
-        $sel = Read-Host "Selecao"
-        $selectedIdx = @()
-        foreach ($part in $sel -split ',') {
-            if ($part -match '^\d+$') { $selectedIdx += [int]$part }
-            elseif ($part -match '^(\d+)-(\d+)$') {
-                $s,$e = $part -split '-'
-                $selectedIdx += [int]$s..[int]$e
-            }
-        }
-        $selectedIdx = $selectedIdx |
-                       Where-Object { $_ -ge 1 -and $_ -le $apps.Count } |
-                       Sort-Object -Unique
-        if (-not $selectedIdx) { Write-Warning "Nenhuma selecao valida."; Read-Host "Enter"; return }
-    }
-
-    # ---------- Confirmação ----------
-    $toDo = $appsWithIdx | Where-Object { $_.'Num' -in $selectedIdx }
-    Write-Host "`nProgramas que serao $($actionText)ados:" -ForegroundColor Yellow
-    if ($Action -eq 'Update') {
-        $toDo | Format-Table -Property Num, Name, ID, Version, Available -AutoSize | Out-Host
-    } else {
-        $toDo | Format-Table -Property Num, Name, ID, Version -AutoSize | Out-Host
-    }
-    $ok = Read-Host "Confirma? (S/N)"
-    if ($ok -notmatch '^[SsYy]') { 
-        Write-Warning "Operacao cancelada."; 
-        Read-Host "Enter para retornar "; 
-        return 
-    }
-
-    # ---------- Execução ----------
-    $success = 0; $fail = 0; $failed = @()
-    foreach ($idx in $selectedIdx) {
-        $app = $appsWithIdx[$idx-1]
-        $appname = $app.Name
-        $appId = $app.ID
+        $indicesArray = $indices -split "," | ForEach-Object { [int]$_.Trim() - 1 } | Where-Object { $_ -ge 0 -and $_ -lt $startupItems.Count }
         
-        Write-Host "$($actionText)ando : $appname - $appId" -ForegroundColor White
-        try {
-            if ($Action -eq 'Update') {
-                winget upgrade --id $appId --accept-source-agreements --accept-package-agreements
-            } else {
-                winget uninstall --id "$appId" --force --accept-source-agreements
-                
-            }
-
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host "[$appName] $($actionText)ado com sucesso." -ForegroundColor Green
-                $success++
-            } else {
-                Write-Host "[$appName] Falhou (código: $LASTEXITCODE)." -ForegroundColor Red
-                $fail++
-                $failed += $appName
+        foreach ($index in $indicesArray) {
+            $item = $startupItems[$index]
+            try {
+                Remove-ItemProperty -Path $item.Caminho -Name $item.Nome -ErrorAction Stop
+                Write-Host "Removido: $($item.Nome)"
+            } catch {
+                Write-Host "Erro ao remover $($item.Nome): $($_.Exception.Message)"
             }
         }
-        catch {
-            Write-Host "[$appName] Erro critico: $($_.Exception.Message)" -ForegroundColor Red
-            $fail++
-            $failed += $appName
-        }
-
-        Start-Sleep -Seconds 2  # Pequena pausa visual
-}
-
-    # ---------- Resumo ----------
-    Write-Host "`n=== RESUMO ===" -ForegroundColor Magenta
-    Write-Host "Sucesso: $success" -ForegroundColor Green
-    Write-Host "Falha  : $fail"   -ForegroundColor Red
-    if ($failed) { 
-        Write-Host "Falharam:" -ForegroundColor Red; $failed | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red } 
-    }
-
-    Write-Output "`nPressione Enter para continuar."; Read-Host
-}
-function Checking_winget {
-    try {
-        # Verifica se o comando winget está disponível
-        if (Get-Command winget -ErrorAction SilentlyContinue) {
-            Write-Host "Winget verificado."
-            return $true
-        }
-        else {
-            Write-Warning "Winget nao encontrado. Tentando instalar...`n"
-            
-            # Tenta instalar o módulo Microsoft.WinGet.Client via PowerShell Gallery
-            Install-PackageProvider -Name NuGet -Force -ErrorAction Stop | Out-Null
-            Install-Module -Name Microsoft.WinGet.Client -Force -ErrorAction Stop | Out-Null
-
-            # Usa Repair para garantir instalação finalizada
-            Repair-WinGetPackageManager -AllUsers -ErrorAction Stop
-
-            Write-Host "Winget instalado com sucesso." -ForegroundColor Yellow
-            return $true
-        }
-    }catch {
-        # Trata erros de instalação
-        Write-Warning "Erro ao verificar ou instalar Winget: $($_.Exception.Message)" 
-        return $false
-    }
-}
-
-# FUNÇÃO PARA VERRIFICAR O DIRETORIO DO SCRIPT
-function Get-ScriptDirectory {
-    # Tenta obter o diretório do script atual
-    try {
-        $scriptDirectory = Split-Path -Path $PSCommandPath -Parent -ErrorAction Stop
-    } catch {
-        Write-Warning "Nao foi possivel obter o diretorio do script: $($_.Exception.Message)"
-        # Fallback para a área de trabalho do usuário
-        $scriptDirectory = [Environment]::GetFolderPath("Desktop")
-        Write-Host "Usando a area de trabalho como diretorio padrao: $scriptDirectory" -ForegroundColor Yellow
-    }
-
-    # Verifica se o diretório existe
-    if (-not (Test-Path $scriptDirectory)) {
-        Write-Warning "Diretorio nao encontrado: $scriptDirectory. Salvando na area de trabalho."
-        $scriptDirectory = [Environment]::GetFolderPath("Desktop")
-    }
-    return $scriptDirectory
-}
-
-function VerifyApps{
-     # Obtém a lista de programas instalados
-    $installedApps = winget list --accept-source-agreements | Out-String
-    $apps = $installedApps -split "`n" | Where-Object { $_ -match "^\S" } | ForEach-Object {
-        $columns = $_ -split "\s{2,}"
-        if ($columns.Count -ge 4) {
-            [PSCustomObject]@{
-                Name    = $columns[0].Trim()
-                ID      = $columns[1].Trim()
-                Version = $columns[2].Trim()
-                Source  = $columns[3].Trim()
-            }
-        }
-    }
-
-    if ($apps.Count -eq 0) {
-        Write-Warning "Nenhum programa encontrado."
-        Write-Output "Pressione Enter para continuar."; Read-Host
-        return
     } else {
-        return $apps
+        Write-Host "Nenhuma ação realizada."
     }
 }
-
 function FunctionHeader {
     param (
         [string]$title
@@ -267,3 +132,295 @@ function FunctionHeader {
     Write-Output ""
 }
 
+
+
+
+
+
+function Manage-StartupApps {
+   
+    [CmdletBinding()]
+    param()
+    
+    # Arrays para armazenar os apps de inicialização
+    $startupApps = @()
+    $index = 1
+    
+    Write-Host "`n=== APLICATIVOS DE INICIALIZAÇÃO DO SISTEMA ===`n" -ForegroundColor Cyan
+    
+    # 1. Verificar pasta de inicialização do usuário atual
+    $userStartupPath = [Environment]::GetFolderPath('Startup')
+    Write-Host "`n[Pasta de Inicialização do Usuário]" -ForegroundColor Yellow
+    
+    if (Test-Path $userStartupPath) {
+        $shortcuts = Get-ChildItem -Path $userStartupPath -Filter *.lnk -ErrorAction SilentlyContinue
+        
+        foreach ($shortcut in $shortcuts) {
+            $shell = New-Object -ComObject WScript.Shell
+            $link = $shell.CreateShortcut($shortcut.FullName)
+            
+            $app = [PSCustomObject]@{
+                Index     = $index
+                Nome      = $shortcut.Name -replace '\.lnk$', ''
+                Caminho   = $link.TargetPath
+                Tipo      = "Pasta Usuário"
+                Local     = $shortcut.FullName
+                IsLink    = $true
+            }
+            $startupApps += $app
+            $index++
+        }
+    }
+    
+    # 2. Verificar pasta de inicialização de todos os usuários
+    $allUsersStartupPath = "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Startup"
+    Write-Host "`n[Pasta de Inicialização de Todos os Usuários]" -ForegroundColor Yellow
+    
+    if (Test-Path $allUsersStartupPath) {
+        $shortcuts = Get-ChildItem -Path $allUsersStartupPath -Filter *.lnk -ErrorAction SilentlyContinue
+        
+        foreach ($shortcut in $shortcuts) {
+            $shell = New-Object -ComObject WScript.Shell
+            $link = $shell.CreateShortcut($shortcut.FullName)
+            
+            $app = [PSCustomObject]@{
+                Index     = $index
+                Nome      = $shortcut.Name -replace '\.lnk$', ''
+                Caminho   = $link.TargetPath
+                Tipo      = "Pasta Todos Usuários"
+                Local     = $shortcut.FullName
+                IsLink    = $true
+            }
+            $startupApps += $app
+            $index++
+        }
+    }
+    
+    # 3. Verificar registro do Windows (HKCU - Usuário atual)
+    Write-Host "`n[Registro - Usuário Atual (HKCU)]" -ForegroundColor Yellow
+    $regPathUser = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+    
+    if (Test-Path $regPathUser) {
+        $regEntries = Get-ItemProperty -Path $regPathUser
+        
+        foreach ($entry in $regEntries.PSObject.Properties | Where-Object {$_.Name -notlike "PS*"}) {
+            $app = [PSCustomObject]@{
+                Index     = $index
+                Nome      = $entry.Name
+                Caminho   = $entry.Value
+                Tipo      = "Registro Usuário"
+                Local     = $regPathUser
+                IsLink    = $false
+            }
+            $startupApps += $app
+            $index++
+        }
+    }
+    
+    # 4. Verificar registro do Windows (HKLM - Máquina)
+    Write-Host "`n[Registro - Máquina (HKLM)]" -ForegroundColor Yellow
+    $regPathMachine = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run"
+    
+    if (Test-Path $regPathMachine) {
+        $regEntries = Get-ItemProperty -Path $regPathMachine
+        
+        foreach ($entry in $regEntries.PSObject.Properties | Where-Object {$_.Name -notlike "PS*"}) {
+            $app = [PSCustomObject]@{
+                Index     = $index
+                Nome      = $entry.Name
+                Caminho   = $entry.Value
+                Tipo      = "Registro Máquina"
+                Local     = $regPathMachine
+                IsLink    = $false
+            }
+            $startupApps += $app
+            $index++
+        }
+    }
+    
+    # 5. Verificar serviços que iniciam automaticamente
+    Write-Host "`n[Serviços de Inicialização Automática]" -ForegroundColor Yellow
+    $services = Get-Service | Where-Object {$_.StartType -eq 'Automatic'} | Select-Object -First 10
+    
+    foreach ($service in $services) {
+        $app = [PSCustomObject]@{
+            Index     = $index
+            Nome      = $service.Name
+            Caminho   = $service.DisplayName
+            Tipo      = "Serviço Automático"
+            Local     = "Services"
+            IsLink    = $false
+        }
+        $startupApps += $app
+        $index++
+    }
+    
+    # Mostrar todos os apps encontrados
+    if ($startupApps.Count -eq 0) {
+        Write-Host "`nNenhum aplicativo de inicialização encontrado." -ForegroundColor Green
+        return
+    }
+    
+    Write-Host "`n" + ("=" * 80) -ForegroundColor Cyan
+    Write-Host "LISTA DE APLICATIVOS NA INICIALIZAÇÃO ($($startupApps.Count) encontrados):" -ForegroundColor Cyan
+    Write-Host ("=" * 80) -ForegroundColor Cyan
+    
+    foreach ($app in $startupApps) {
+        $color = if ($app.Tipo -like "*Usuário*") { "Green" } 
+                elseif ($app.Tipo -like "*Máquina*") { "Yellow" }
+                elseif ($app.Tipo -like "*Todos*") { "Magenta" }
+                else { "White" }
+        
+        Write-Host ("[{0:00}] {1}" -f $app.Index, $app.Nome) -ForegroundColor $color -NoNewline
+        Write-Host " - $($app.Tipo)" -ForegroundColor Gray
+        Write-Host "   Caminho: $($app.Caminho)" -ForegroundColor DarkGray
+        if ($app.Tipo -like "*Serviço*") {
+            Write-Host "   Tipo: Serviço do Windows (use 'services.msc' para gerenciar)" -ForegroundColor DarkCyan
+        }
+    }
+    
+    Write-Host "`n" + ("=" * 80) -ForegroundColor Cyan
+    
+    # Menu de opções
+    Write-Host "`nOPÇÕES:" -ForegroundColor Yellow
+    Write-Host "1. Remover um aplicativo específico"
+    Write-Host "2. Remover todos os aplicativos (excluindo serviços)"
+    Write-Host "3. Sair"
+    
+    do {
+        $opcao = Read-Host "`nDigite sua escolha (1-3)"
+    } while ($opcao -notmatch '^[1-3]$')
+    
+    switch ($opcao) {
+        "1" {
+            # Remover aplicativo específico
+            do {
+                $appIndex = Read-Host "`nDigite o número do aplicativo para remover (1-$($startupApps.Count)) ou 0 para cancelar"
+                
+                if ($appIndex -eq "0") {
+                    Write-Host "Operação cancelada." -ForegroundColor Yellow
+                    return
+                }
+                
+                $selectedApp = $startupApps | Where-Object {$_.Index -eq [int]$appIndex}
+                
+                if (-not $selectedApp) {
+                    Write-Host "Número inválido. Tente novamente." -ForegroundColor Red
+                }
+            } while (-not $selectedApp)
+            
+            # Verificar permissões para itens do registro
+            if (($selectedApp.Tipo -like "*Registro*" -or $selectedApp.Tipo -like "*Todos*") -and -not $isAdmin) {
+                Write-Host "`nAVISO: Para remover itens do registro ou da pasta Todos Usuários," -ForegroundColor Yellow
+                Write-Host "execute o PowerShell como Administrador." -ForegroundColor Yellow
+                return
+            }
+            
+            # Confirmar remoção
+            Write-Host "`nVocê selecionou:" -ForegroundColor Yellow
+            Write-Host "Nome: $($selectedApp.Nome)" -ForegroundColor Cyan
+            Write-Host "Tipo: $($selectedApp.Tipo)" -ForegroundColor Cyan
+            Write-Host "Caminho: $($selectedApp.Caminho)" -ForegroundColor Cyan
+            
+            $confirm = Read-Host "`nTem certeza que deseja remover este item? (S/N)"
+            
+            if ($confirm -match '^[SsYy]') {
+                try {
+                    if ($selectedApp.IsLink) {
+                        # Remover atalho da pasta de inicialização
+                        Remove-Item -Path $selectedApp.Local -Force -ErrorAction Stop
+                        Write-Host "`nAtalho removido com sucesso!" -ForegroundColor Green
+                    }
+                    elseif ($selectedApp.Tipo -like "*Registro*") {
+                        # Remover do registro
+                        $regPath = if ($selectedApp.Tipo -eq "Registro Usuário") {
+                            "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+                        } else {
+                            "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run"
+                        }
+                        
+                        Remove-ItemProperty -Path $regPath -Name $selectedApp.Nome -ErrorAction Stop
+                        Write-Host "`nEntrada do registro removida com sucesso!" -ForegroundColor Green
+                    }
+                    elseif ($selectedApp.Tipo -like "*Serviço*") {
+                        Write-Host "`nServiços devem ser gerenciados através do 'services.msc'" -ForegroundColor Yellow
+                        Write-Host "Ou usando: Set-Service -Name '$($selectedApp.Nome)' -StartupType Manual" -ForegroundColor Yellow
+                    }
+                }
+                catch {
+                    Write-Host "`nErro ao remover: $($_.Exception.Message)" -ForegroundColor Red
+                }
+            }
+            else {
+                Write-Host "`nOperação cancelada pelo usuário." -ForegroundColor Yellow
+            }
+        }
+        
+        "2" {
+            # Remover todos os aplicativos
+            Write-Host "`nAVISO: Esta ação irá remover TODOS os aplicativos de inicialização" -ForegroundColor Red
+            Write-Host "(exceto serviços). Isso pode afetar o comportamento do sistema." -ForegroundColor Red
+            
+            $confirm = Read-Host "`nTem ABSOLUTA certeza? (digite 'SIM' para confirmar)"
+            
+            if ($confirm -eq "SIM") {
+                $removedCount = 0
+                
+                foreach ($app in $startupApps | Where-Object {$_.Tipo -notlike "*Serviço*"}) {
+                    try {
+                        if ($app.IsLink) {
+                            # Verificar se precisa de admin para pasta Todos Usuários
+                            if ($app.Tipo -like "*Todos*" -and -not $isAdmin) {
+                                Write-Host "Pulando '$($app.Nome)': requer admin" -ForegroundColor Yellow
+                                continue
+                            }
+                            
+                            if (Test-Path $app.Local) {
+                                Remove-Item -Path $app.Local -Force -ErrorAction Stop
+                                $removedCount++
+                            }
+                        }
+                        elseif ($app.Tipo -like "*Registro*") {
+                            # Verificar admin para registro HKLM
+                            if ($app.Tipo -eq "Registro Máquina" -and -not $isAdmin) {
+                                Write-Host "Pulando '$($app.Nome)': requer admin" -ForegroundColor Yellow
+                                continue
+                            }
+                            
+                            $regPath = if ($app.Tipo -eq "Registro Usuário") {
+                                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+                            } else {
+                                "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run"
+                            }
+                            
+                            if (Test-Path $regPath) {
+                                Remove-ItemProperty -Path $regPath -Name $app.Nome -ErrorAction Stop
+                                $removedCount++
+                            }
+                        }
+                    }
+                    catch {
+                        Write-Host "Erro ao remover '$($app.Nome)': $($_.Exception.Message)" -ForegroundColor Red
+                    }
+                }
+                
+                Write-Host "`nTotal de $removedCount itens removidos." -ForegroundColor Green
+            }
+            else {
+                Write-Host "`nOperação cancelada." -ForegroundColor Yellow
+            }
+        }
+        
+        "3" {
+            Write-Host "`nSaindo..." -ForegroundColor Yellow
+        }
+    }
+    
+    # Limpar objetos COM
+    if ($shell) {
+        [System.Runtime.Interopservices.Marshal]::ReleaseComObject($shell) | Out-Null
+    }
+}
+
+# Para usar a função:
+Manage-StartupApps

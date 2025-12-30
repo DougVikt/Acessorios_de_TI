@@ -316,7 +316,7 @@ function UpdateUnistallApps {
     }
     # ---------- Selecao ----------
     if ($Action -eq 'Update') {
-        $all = Read-Host "Atualizar TODOS os programas listados? (S/N) [N = escolher]"
+        $all = Read-Host "Atualizar todos os programas listados? (S/N)"
         if ($all -match '^[SsYy]') { 
             $selectedIdx = 1..$apps.Count 
         }elseif ($all -match '^[Nn]') {
