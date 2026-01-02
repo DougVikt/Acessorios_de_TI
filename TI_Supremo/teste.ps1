@@ -23,7 +23,7 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", $viewerScript
 # ====================================================================================
 
 
-function Gerenciar-AppsInicializacao {   
+function Get-StartupAppManagement {   
     # Obtém os itens de inicialização do registro (HKCU e HKLM)
     $startupItems = @()
     # Exibe cabeçalho
@@ -70,16 +70,12 @@ function Gerenciar-AppsInicializacao {
         return
     }
     
-     $itemsInTable = $startupItems| ForEach-Object -Begin { $i = 1 } -Process {
-        $_ | Add-Member -NotePropertyName 'Num' -NotePropertyValue $i -PassThru
-        $i++
+    $itemsInTable = $startupItems | ForEach-Object -Begin { $num = 1 } -Process {
+        $_ | Add-Member -NotePropertyName 'Num' -NotePropertyValue $num -PassThru
+        $num++
     }
     # Exibe os itens na tela
-    # Write-Host "Aplicativos na inicializacao do sistema:"
-    # for ($i = 0; $i -lt $startupItems.Count; $i++) {
-    #     Write-Host "[$($i + 1)] - $($startupItems[$i].Nome)"
-    # }
-    $itemsInTable | Select-Object Num, Name | Format-Table -AutoSize | Out-Host
+    $itemsInTable | Select-Object Num, Nome | Format-Table -AutoSize | Out-Host
     # Pergunta ao usuário
     try {
         $opcao = Read-Host "Digite 'todos' para remover todos,`n'selecionar' para escolher quais remover, ou 'nenhum' para sair"
@@ -120,24 +116,10 @@ function Gerenciar-AppsInicializacao {
     } else {
         Write-Host "Nenhuma ação realizada."
     }
-}
-function FunctionHeader {
-    param (
-        [string]$title
-    )
-    Clear-Host
-    Write-Output ("="*65)
-    Write-Output "               $title"
-    Write-Output ("="*65)
-    Write-Output ""
-}
+}# não muito completa mas funciona 
 
 
-
-
-
-
-function Manage-StartupApps {
+function Remove-StartupApps {
    
     [CmdletBinding()]
     param()
@@ -270,7 +252,7 @@ function Manage-StartupApps {
                 elseif ($app.Tipo -like "*Máquina*") { "Yellow" }
                 elseif ($app.Tipo -like "*Todos*") { "Magenta" }
                 else { "White" }
-        
+
         Write-Host ("[{0:00}] {1}" -f $app.Index, $app.Nome) -ForegroundColor $color -NoNewline
         Write-Host " - $($app.Tipo)" -ForegroundColor Gray
         Write-Host "   Caminho: $($app.Caminho)" -ForegroundColor DarkGray
@@ -420,7 +402,444 @@ function Manage-StartupApps {
     if ($shell) {
         [System.Runtime.Interopservices.Marshal]::ReleaseComObject($shell) | Out-Null
     }
+}# completa , funciona e bem detalhada 
+
+function RepairInstalledApps {
+    FunctionHeader -title "REPARANDO PROGRAMAS INSTALADOS"
+    
+    if (Checking_winget) {
+        Write-Host "Reparando programas instalados via Winget..." -ForegroundColor Cyan
+        Write-Host "Esta operação pode demorar alguns minutos." -ForegroundColor Yellow
+        
+        try {
+            # Obtém lista de programas com problemas
+            $brokenApps = winget list --verify --disable-interactivity | Out-String
+            $appsToRepair = $brokenApps -split "`n" | Where-Object { $_ -match "Verification failed" }
+            
+            if ($appsToRepair.Count -eq 0) {
+                Write-Host "Nenhum programa com problemas de verificação encontrado." -ForegroundColor Green
+                Write-Output "Pressione Enter para continuar."; Read-Host
+                return
+            }
+            
+            Write-Host "Programas que serão reparados:" -ForegroundColor Yellow
+            $appsToRepair | ForEach-Object {
+                $appName = $_ -replace ".*Verification failed for ", ""
+                Write-Host "  - $appName" -ForegroundColor Red
+            }
+            
+            $confirm = Read-Host "`nDeseja prosseguir com o reparo? (S/N)"
+            if ($confirm -match '^[SsYy]') {
+                $successCount = 0
+                $failCount = 0
+                
+                foreach ($app in $appsToRepair) {
+                    $appId = $app -split " " | Select-Object -First 1
+                    Write-Host "Reparando: $appId" -ForegroundColor White
+                    
+                    try {
+                        winget repair --id $appId --accept-source-agreements --accept-package-agreements
+                        if ($LASTEXITCODE -eq 0) {
+                            Write-Host "  $appId reparado com sucesso" -ForegroundColor Green
+                            $successCount++
+                        } else {
+                            Write-Host "  Falha ao reparar $appId" -ForegroundColor Red
+                            $failCount++
+                        }
+                    } catch {
+                        Write-Host "  Erro ao reparar $appId : $($_.Exception.Message)" -ForegroundColor Red
+                        $failCount++
+                    }
+                    Start-Sleep -Seconds 1
+                }
+                
+                Write-Host "`n=== RESUMO DO REPARO ===" -ForegroundColor Magenta
+                Write-Host "Programas reparados: $successCount" -ForegroundColor Green
+                Write-Host "Programas com falha: $failCount" -ForegroundColor Red
+            } else {
+                Write-Host "Operação cancelada pelo usuário." -ForegroundColor Yellow
+            }
+        } catch {
+            Write-Warning "Erro ao verificar programas: $($_.Exception.Message)"
+        }
+    } else {
+        Write-Warning "Winget não está disponível."
+    }
+    Write-Output "`nPressione Enter para continuar."; Read-Host
 }
 
-# Para usar a função:
-Manage-StartupApps
+# Função para limpar cache de aplicativos
+function ClearAppCache {
+    FunctionHeader -title "LIMPEZA DE CACHE DE APLICATIVOS"
+    
+    Write-Host "Limpando cache de aplicativos..." -ForegroundColor Cyan
+    
+    # Locais comuns de cache
+    $cacheLocations = @(
+        "$env:LOCALAPPDATA\Temp",
+        "$env:TEMP",
+        "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Cache",
+        "$env:LOCALAPPDATA\Microsoft\Windows\INetCache",
+        "$env:LOCALAPPDATA\Microsoft\Windows\INetCookies",
+        "$env:LOCALAPPDATA\Microsoft\Windows\Temporary Internet Files",
+        "$env:APPDATA\Mozilla\Firefox\Profiles\*\cache2",
+        "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Cache"
+    )
+    
+    $totalFreed = 0
+    $successCount = 0
+    $failCount = 0
+    
+    foreach ($location in $cacheLocations) {
+        if (Test-Path $location) {
+            try {
+                Write-Host "Limpando: $location" 
+                $files = Get-ChildItem -Path $location -Recurse -Force -ErrorAction SilentlyContinue | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-7) }
+                
+                if ($files) {
+                    # CORREÇÃO: Adicionado '-Property Length' ao Measure-Object
+                    $sizeBefore = ($files | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum / 1MB
+                    $files | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+                    $totalFreed += $sizeBefore
+                    $successCount++
+                    Write-Host "Liberado: {0:N2} MB" -f $sizeBefore 
+                } else {
+                    Write-Host "Nenhum arquivo antigo encontrado" -ForegroundColor Gray
+                }
+            } catch {
+                Write-Host "Erro ao limpar: $($_.Exception.Message)" -ForegroundColor Red
+                $failCount++
+            }
+        } else {
+            Write-Host "Local não encontrado: $location" -ForegroundColor DarkGray
+        }
+    }
+    
+    # Limpar cache do Windows Update
+    Write-Host "`nLimpando cache do Windows Update..." -ForegroundColor Cyan
+    try {
+        Write-Host "Parando serviço Windows Update..." -ForegroundColor White
+        Stop-Service wuauserv -Force -ErrorAction SilentlyContinue
+        
+        $wuPath = "$env:WINDIR\SoftwareDistribution\Download"
+        if (Test-Path $wuPath) {
+            $wuSizeBefore = (Get-ChildItem -Path $wuPath -Recurse -Force -ErrorAction SilentlyContinue | 
+                           Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum / 1MB
+            $sizeMb = [math]::Round($wuSizeBefore ,2)
+            Write-Host "  Tamanho do cache: $sizeMb MB" 
+            
+            Remove-Item "$wuPath\*" -Recurse -Force -ErrorAction SilentlyContinue
+            $totalFreed += $wuSizeBefore
+            $successCount++
+            Write-Host "Cache do Windows Update limpo" -ForegroundColor Green
+        }
+        
+        Write-Host "Iniciando serviço Windows Update..." -ForegroundColor White
+        Start-Service wuauserv -ErrorAction SilentlyContinue
+    } catch {
+        Write-Host "Erro ao limpar cache do Windows Update: $($_.Exception.Message)" -ForegroundColor Red
+        $failCount++
+    }
+    
+    # Limpar thumbnail cache
+    Write-Host "`nLimpando cache de thumbnails..." -ForegroundColor Cyan
+    try {
+        $thumbPath = "$env:LOCALAPPDATA\Microsoft\Windows\Explorer"
+        if (Test-Path $thumbPath) {
+            $thumbFiles = Get-ChildItem -Path $thumbPath -Filter "*.db" -Force -ErrorAction SilentlyContinue
+            if ($thumbFiles) {
+                $thumbSize = ($thumbFiles | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum / 1MB
+                $thumbFiles | Remove-Item -Force -ErrorAction SilentlyContinue
+                $totalFreed += $thumbSize
+                $successCount++
+                $sizeMbThumb = [math]::Round($thumbSize ,2)
+                Write-Host "Cache de thumbnails limpo: $sizeMbThumb MB" -ForegroundColor Green
+            }
+        }
+    } catch {
+        Write-Host "Não foi possível limpar cache de thumbnails" -ForegroundColor Gray
+    }
+    
+    # Limpar cache do DNS
+    Write-Host "`nLimpando cache DNS..." -ForegroundColor Cyan
+    try {
+        ipconfig /flushdns | Out-Null
+        Write-Host "Cache DNS limpo" -ForegroundColor Green
+        $successCount++
+    } catch {
+        Write-Host "Erro ao limpar cache DNS" -ForegroundColor Red
+        $failCount++
+    }
+    
+    Write-Host "`n" + ("=" * 65) -ForegroundColor Cyan
+    Write-Host "=== RESUMO DA LIMPEZA ===" -ForegroundColor Magenta
+    Write-Host "Espaço total liberado: {0:N2} MB" -f $totalFreed -ForegroundColor Green
+    Write-Host "Operações bem-sucedidas: $successCount" -ForegroundColor Green
+    Write-Host "Erros encontrados: $failCount" -ForegroundColor Red
+    
+    # Feedback baseado no total liberado
+    if ($totalFreed -gt 100) {
+        Write-Host "`nLimpeza significativa realizada! ({0:N2} MB)" -f $totalFreed -ForegroundColor Green
+    } elseif ($totalFreed -gt 0) {
+        Write-Host "`nLimpeza realizada ({0:N2} MB)" -f $totalFreed -ForegroundColor Green
+    } else {
+        Write-Host "`nNenhum arquivo de cache antigo encontrado" -ForegroundColor Yellow
+    }
+    
+    # Opção para limpar prefetch
+    $prefetch = Read-Host "`nDeseja limpar arquivos Prefetch? (S/N)"
+    if ($prefetch -match '^[SsYy]') {
+        try {
+            $prefetchPath = "$env:WINDIR\Prefetch"
+            if (Test-Path $prefetchPath) {
+                $prefetchSize = (Get-ChildItem -Path $prefetchPath -Force -ErrorAction SilentlyContinue | 
+                               Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum / 1MB
+                Remove-Item "$prefetchPath\*" -Force -ErrorAction SilentlyContinue
+                $totalFreed += $prefetchSize
+                Write-Host "Arquivos Prefetch limpos: {0:N2} MB" -f $prefetchSize -ForegroundColor Green
+            }
+        } catch {
+            Write-Host "Erro ao limpar Prefetch" -ForegroundColor Red
+        }
+    }
+    
+    # Opção para limpar Recent
+    $recent = Read-Host "`nDeseja limpar arquivos Recentes? (S/N)"
+    if ($recent -match '^[SsYy]') {
+        try {
+            $recentPath = "$env:APPDATA\Microsoft\Windows\Recent"
+            if (Test-Path $recentPath) {
+                $recentSize = (Get-ChildItem -Path $recentPath -Force -ErrorAction SilentlyContinue | 
+                             Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum / 1MB
+                Remove-Item "$recentPath\*" -Force -Recurse -ErrorAction SilentlyContinue
+                $totalFreed += $recentSize
+                Write-Host "Arquivos Recentes limpos: {0:N2} MB" -f $recentSize -ForegroundColor Green
+            }
+        } catch {
+            Write-Host "Erro ao limpar arquivos Recentes" -ForegroundColor Red
+        }
+    }
+    
+    Write-Host "`n" + ("=" * 65) -ForegroundColor Cyan
+    Write-Host "Espaço total liberado final: {0:N2} MB" -f $totalFreed -ForegroundColor Green
+    
+    Write-Output "`nPressione Enter para continuar."; Read-Host
+}
+# # Função para verificar programas com inicialização automática
+# function CheckStartupApps {
+#     FunctionHeader -title "VERIFICANDO PROGRAMAS COM INICIALIZAÇÃO AUTOMÁTICA"
+    
+#     Write-Host "Coletando informações de programas que iniciam automaticamente..." -ForegroundColor Cyan
+    
+#     # 1. Verificar pasta de inicialização do usuário
+#     $userStartupPath = [Environment]::GetFolderPath('Startup')
+#     Write-Host "`n[Pasta de Inicialização do Usuário]" -ForegroundColor Yellow
+#     Write-Host "Caminho: $userStartupPath" -ForegroundColor Gray
+    
+#     if (Test-Path $userStartupPath) {
+#         $userApps = Get-ChildItem -Path $userStartupPath -Filter *.lnk -ErrorAction SilentlyContinue
+#         if ($userApps) {
+#             $userApps | ForEach-Object {
+#                 $shell = New-Object -ComObject WScript.Shell
+#                 $link = $shell.CreateShortcut($_.FullName)
+#                 Write-Host "  • $($_.Name): $($link.TargetPath)" -ForegroundColor White
+#             }
+#         } else {
+#             Write-Host "  Nenhum atalho encontrado" -ForegroundColor Gray
+#         }
+#     }
+    
+#     # 2. Verificar registro HKCU
+#     Write-Host "`n[Registro - Usuário Atual (HKCU)]" -ForegroundColor Yellow
+#     $regPathUser = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+#     if (Test-Path $regPathUser) {
+#         $regUser = Get-ItemProperty -Path $regPathUser
+#         $regUser.PSObject.Properties | Where-Object {$_.Name -notlike "PS*"} | ForEach-Object {
+#             Write-Host "  • $($_.Name): $($_.Value)" -ForegroundColor White
+#         }
+#     }
+    
+#     # 3. Verificar registro HKLM
+#     Write-Host "`n[Registro - Máquina (HKLM)]" -ForegroundColor Yellow
+#     $regPathMachine = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run"
+#     if (Test-Path $regPathMachine) {
+#         $regMachine = Get-ItemProperty -Path $regPathMachine
+#         $regMachine.PSObject.Properties | Where-Object {$_.Name -notlike "PS*"} | ForEach-Object {
+#             Write-Host "  • $($_.Name): $($_.Value)" -ForegroundColor White
+#         }
+#     }
+    
+#     # 4. Verificar serviços que iniciam automaticamente
+#     Write-Host "`n[Serviços de Inicialização Automática]" -ForegroundColor Yellow
+#     $autoServices = Get-Service | Where-Object {$_.StartType -eq 'Automatic'} | Select-Object -First 15
+#     $autoServices | ForEach-Object {
+#         Write-Host "  • $($_.Name): $($_.DisplayName)" -ForegroundColor White
+#     }
+    
+#     if ($autoServices.Count -eq 15) {
+#         Write-Host "  (Mostrando apenas 15 serviços. Use 'services.msc' para ver todos)" -ForegroundColor Gray
+#     }
+    
+#     # 5. Verificar com WMIC
+#     Write-Host "`n[Tarefas Agendadas de Inicialização]" -ForegroundColor Yellow
+#     try {
+#         $startupTasks = Get-CimInstance Win32_StartupCommand | Select-Object -First 10
+#         $startupTasks | ForEach-Object {
+#             Write-Host "  • $($_.Name): $($_.Command)" -ForegroundColor White
+#         }
+#     } catch {
+#         Write-Host "  Erro ao acessar tarefas agendadas" -ForegroundColor Red
+#     }
+    
+#     Write-Host "`n" + ("=" * 65) -ForegroundColor Cyan
+#     Write-Host "Dica: Use o Gerenciador de Tarefas para mais detalhes (Ctrl+Shift+Esc)" -ForegroundColor Yellow
+    
+#     Write-Output "`nPressione Enter para continuar."; Read-Host
+    
+#     # Limpar objetos COM
+#     if ($shell) { [System.Runtime.Interopservices.Marshal]::ReleaseComObject($shell) | Out-Null }
+# }
+
+# # Função para otimizar inicialização de programas
+# function OptimizeStartupApps {
+#     FunctionHeader -title "OTIMIZANDO INICIALIZAÇÃO DE PROGRAMAS"
+    
+#     Write-Host "Analisando impacto na inicialização..." -ForegroundColor Cyan
+    
+#     # Verificar programas com alto impacto (via PowerShell 5.1+ ou alternativa)
+#     try {
+#         # Tentar usar o Get-CimInstance para obter informações de inicialização
+#         $startupItems = Get-CimInstance Win32_StartupCommand | ForEach-Object {
+#             [PSCustomObject]@{
+#                 Nome = $_.Name
+#                 Comando = $_.Command
+#                 Local = $_.Location
+#             }
+#         }
+        
+#         if ($startupItems) {
+#             Write-Host "Programas encontrados:" -ForegroundColor Yellow
+#             $startupItems | ForEach-Object {
+#                 Write-Host "  • $($_.Nome)" -ForegroundColor White
+#             }
+            
+#             Write-Host "`nRecomendações:" -ForegroundColor Cyan
+#             Write-Host "1. Programas pesados como Steam, Discord, Skype podem atrasar a inicialização" -ForegroundColor Yellow
+#             Write-Host "2. Utilitários de atualização (Adobe, Google, etc.) podem ser desativados" -ForegroundColor Yellow
+#             Write-Host "3. Programas de nuvem (OneDrive, Dropbox) podem iniciar após login" -ForegroundColor Yellow
+            
+#             $action = Read-Host "`nDeseja desativar algum programa da inicialização? (S/N)"
+            
+#             if ($action -match '^[SsYy]') {
+#                 Write-Host "`nOpções de desativação:" -ForegroundColor Yellow
+#                 Write-Host "1. Desativar via Gerenciador de Tarefas (recomendado para iniciantes)"
+#                 Write-Host "2. Desativar via registro (avançado)"
+#                 Write-Host "3. Cancelar"
+                
+#                 $option = Read-Host "`nEscolha uma opção (1-3)"
+                
+#                 switch ($option) {
+#                     "1" {
+#                         Write-Host "`nAbrindo Gerenciador de Tarefas..." -ForegroundColor Cyan
+#                         Write-Host "Vá para a aba 'Inicializar' para gerenciar programas." -ForegroundColor Yellow
+#                         Write-Host "Clique com o botão direito no programa e selecione 'Desabilitar'." -ForegroundColor Yellow
+#                         Start-Process "taskmgr.exe" -ArgumentList "/0 /startup"
+#                     }
+#                     "2" {
+#                         # Desativar via registro (apenas HKCU)
+#                         Write-Host "`nDesativando programas do registro do usuário..." -ForegroundColor Cyan
+#                         $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+                        
+#                         if (Test-Path $regPath) {
+#                             $regItems = Get-ItemProperty -Path $regPath
+#                             $items = $regItems.PSObject.Properties | Where-Object {$_.Name -notlike "PS*"}
+                            
+#                             if ($items) {
+#                                 Write-Host "Programas no registro:" -ForegroundColor Yellow
+#                                 $i = 1
+#                                 $items | ForEach-Object {
+#                                     Write-Host "  [$i] $($_.Name)" -ForegroundColor White
+#                                     $i++
+#                                 }
+                                
+#                                 $choice = Read-Host "`nDigite o número do programa para remover (ou 0 para cancelar)"
+#                                 if ($choice -ne "0" -and $choice -le $items.Count) {
+#                                     $selected = $items[$choice - 1]
+#                                     $confirm = Read-Host "Remover '$($selected.Name)'? (S/N)"
+                                    
+#                                     if ($confirm -match '^[SsYy]') {
+#                                         Remove-ItemProperty -Path $regPath -Name $selected.Name -Force
+#                                         Write-Host "✓ Programa removido da inicialização" -ForegroundColor Green
+#                                     }
+#                                 }
+#                             }
+#                         }
+#                     }
+#                 }
+#             }
+#         } else {
+#             Write-Host "Não foram encontrados programas para otimizar." -ForegroundColor Green
+#         }
+#     } catch {
+#         Write-Host "Não foi possível obter informações detalhadas de inicialização." -ForegroundColor Yellow
+#         Write-Host "Abra o Gerenciador de Tarefas (Ctrl+Shift+Esc) para ver os programas de inicialização." -ForegroundColor Yellow
+#     }
+    
+#     # Dicas gerais de otimização
+#     Write-Host "`n=== DICAS DE OTIMIZAÇÃO ===" -ForegroundColor Magenta
+#     Write-Host "• Desative serviços desnecessários (veja opção 'Serviços do Sistema')" -ForegroundColor White
+#     Write-Host "• Use SSD para melhor performance de inicialização" -ForegroundColor White
+#     Write-Host "• Mantenha drivers atualizados" -ForegroundColor White
+#     Write-Host "• Desfragmente o disco (apenas para HDD)" -ForegroundColor White
+    
+#     Write-Output "`nPressione Enter para continuar."; Read-Host
+# }
+
+
+
+
+
+
+# ======================================== GLOBAIS ==========================================================================
+function Checking_winget {
+    try {
+        # Verifica se o comando winget está disponível
+        if (Get-Command winget -ErrorAction SilentlyContinue) {
+            Write-Host "Winget verificado."
+            return $true
+        }
+        else {
+            Write-Warning "Winget nao encontrado. Tentando instalar...`n"
+            
+            # Tenta instalar o módulo Microsoft.WinGet.Client via PowerShell Gallery
+            Install-PackageProvider -Name NuGet -Force -ErrorAction Stop | Out-Null
+            Install-Module -Name Microsoft.WinGet.Client -Force -ErrorAction Stop | Out-Null
+
+            # Usa Repair para garantir instalação finalizada
+            Repair-WinGetPackageManager -AllUsers -ErrorAction Stop
+
+            Write-Host "Winget instalado com sucesso." -ForegroundColor Yellow
+            return $true
+        }
+    }catch {
+        # Trata erros de instalação
+        Write-Warning "Erro ao verificar ou instalar Winget: $($_.Exception.Message)" 
+        return $false
+    }
+}
+
+function FunctionHeader {
+    param (
+        [string]$title
+    )
+    Clear-Host
+    Write-Output ("="*65)
+    Write-Output "               $title"
+    Write-Output ("="*65)
+    Write-Output ""
+}
+
+
+
+# ============ CHAMANDO DAS FUNCOES ============
+ClearAppCache
