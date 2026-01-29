@@ -473,7 +473,13 @@ function ClearAppCache {
     FunctionHeader -title "LIMPEZA DE CACHE DE APLICATIVOS"
     
     Write-Host "Limpando cache de aplicativos..." -ForegroundColor Cyan
-    
+    # sid do usuário
+    $UserSID = (New-Object System.Security.Principal.NTAccount($env:USERNAME)).Translate([System.Security.Principal.SecurityIdentifier]).Value
+    function Test-RecycleBin {
+        param($Drive = $env:SystemDrive)
+        $path = "$Drive`\$Recycle.Bin\$UserSID"
+        return (Get-Item $path -Force -ErrorAction SilentlyContinue) -ne $null
+    }
     # Locais comuns de cache
     $cacheLocations = @(
         "$env:LOCALAPPDATA\Temp",
@@ -481,9 +487,8 @@ function ClearAppCache {
         "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Cache",
         "$env:LOCALAPPDATA\Microsoft\Windows\INetCache",
         "$env:LOCALAPPDATA\Microsoft\Windows\INetCookies",
-        "$env:LOCALAPPDATA\Microsoft\Windows\Temporary Internet Files",
-        "$env:APPDATA\Mozilla\Firefox\Profiles\*\cache2",
-        "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Cache"
+        "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Cache",
+        "$env:SystemDrive`\$Recycle.Bin\$UserSID"
     )
     
     $totalFreed = 0
@@ -502,7 +507,8 @@ function ClearAppCache {
                     $files | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
                     $totalFreed += $sizeBefore
                     $successCount++
-                    Write-Host "Liberado: {0:N2} MB" -f $sizeBefore 
+                    $sizeBefore = [math]::Round($sizeBefore ,2)
+                    Write-Host "Liberado: $sizeBefore MB" 
                 } else {
                     Write-Host "Nenhum arquivo antigo encontrado" -ForegroundColor Gray
                 }
@@ -573,15 +579,16 @@ function ClearAppCache {
     
     Write-Host "`n" + ("=" * 65) -ForegroundColor Cyan
     Write-Host "=== RESUMO DA LIMPEZA ===" -ForegroundColor Magenta
-    Write-Host "Espaço total liberado: {0:N2} MB" -f $totalFreed -ForegroundColor Green
+    $totalFreed = [math]::Round($totalFreed ,2)
+    Write-Host "Espaço total liberado: $totalFreed MB "
     Write-Host "Operações bem-sucedidas: $successCount" -ForegroundColor Green
     Write-Host "Erros encontrados: $failCount" -ForegroundColor Red
     
     # Feedback baseado no total liberado
     if ($totalFreed -gt 100) {
-        Write-Host "`nLimpeza significativa realizada! ({0:N2} MB)" -f $totalFreed -ForegroundColor Green
+        Write-Host "`nLimpeza significativa realizada! ($totalFreed MB)" -ForegroundColor Green
     } elseif ($totalFreed -gt 0) {
-        Write-Host "`nLimpeza realizada ({0:N2} MB)" -f $totalFreed -ForegroundColor Green
+        Write-Host "`nLimpeza realizada ($totalFreed MB)" -ForegroundColor Green
     } else {
         Write-Host "`nNenhum arquivo de cache antigo encontrado" -ForegroundColor Yellow
     }
@@ -596,7 +603,8 @@ function ClearAppCache {
                                Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum / 1MB
                 Remove-Item "$prefetchPath\*" -Force -ErrorAction SilentlyContinue
                 $totalFreed += $prefetchSize
-                Write-Host "Arquivos Prefetch limpos: {0:N2} MB" -f $prefetchSize -ForegroundColor Green
+                $prefetchSize = [math]::Round($prefetchSize ,2)
+                Write-Host "Arquivos Prefetch limpos: $prefetchSize MB" -ForegroundColor Green
             }
         } catch {
             Write-Host "Erro ao limpar Prefetch" -ForegroundColor Red
@@ -613,7 +621,8 @@ function ClearAppCache {
                              Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum / 1MB
                 Remove-Item "$recentPath\*" -Force -Recurse -ErrorAction SilentlyContinue
                 $totalFreed += $recentSize
-                Write-Host "Arquivos Recentes limpos: {0:N2} MB" -f $recentSize -ForegroundColor Green
+                $recentSize = [math]::Round($recentSize ,2)
+                Write-Host "Arquivos Recentes limpos: $recentSize MB" -ForegroundColor Green
             }
         } catch {
             Write-Host "Erro ao limpar arquivos Recentes" -ForegroundColor Red
@@ -621,7 +630,8 @@ function ClearAppCache {
     }
     
     Write-Host "`n" + ("=" * 65) -ForegroundColor Cyan
-    Write-Host "Espaço total liberado final: {0:N2} MB" -f $totalFreed -ForegroundColor Green
+    $totalFreed = [math]::Round($totalFreed ,2)
+    Write-Host "Espaço total liberado final: $totalFreed MB"
     
     Write-Output "`nPressione Enter para continuar."; Read-Host
 }
@@ -842,4 +852,5 @@ function FunctionHeader {
 
 
 # ============ CHAMANDO DAS FUNCOES ============
+
 ClearAppCache
