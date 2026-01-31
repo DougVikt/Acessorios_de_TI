@@ -1,0 +1,2 @@
+
+>LOG-31/01/2026 11:47:32: LOG - Erro de execução: Neither GUI element (wrapper) nor wrapper method 'is_focused' were found (typo?)
