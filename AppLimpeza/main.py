@@ -1,9 +1,9 @@
 import subprocess as sbp
 import pyautogui
 from pywinauto import Application
-import os
-import shutil
 import psutil
+import shutil
+import os
 import pygetwindow as gw
 import tkinter as tk
 from tkinter import messagebox , ttk
@@ -55,18 +55,18 @@ class AppCleaner:
             self.tkr.geometry("210x100")
             self.tkr.configure(bg="gray")
             self.tkr.overrideredirect(True)
-            label_version = self.ttk.Label(
-                self.tkr,text=f"V {self.version}",background='gray'
+            label_version = ttk.Label(
+                self.tkr,text=f"V {__version__}",background='gray'
             )
             label_version.pack()
-            label = self.ttk.Label( 
+            label = ttk.Label( 
                 self.tkr, text=text, background="gray",fg="gold",padx=30,
                 pady=30,font=("Helvetica", 16)
             ) # janela de inicio
             label.pack()
             if close:
                 self.tkr.geometry("210x150")
-                button = self.ttk.Button( 
+                button = ttk.Button( 
                     self.tkr, text="Fechar", command=self.tkr.destroy ,bg="red", 
                     fg="black" ,font=("Helvetica", 12),borderwidth=2, relief="ridge",
                     padx=20
@@ -80,7 +80,8 @@ class AppCleaner:
             return self._erro_message(f"Erro na criação da janela principal: {e}")
         
         
-    def disk_clear(self):
+    def disk_clear(self ):
+        open = False
         try:
             sbp.run(["cleanmgr.exe", "/sageget:1"] , shell=False , check=False)  # Abre o Disk Cleanup
             # Verifica se o Disk Cleanup está aberto
@@ -103,39 +104,41 @@ class AppCleaner:
                         marked = list_itens.is_checked(n) # Verifica se o item já está marcado
                         if not marked:
                             list_itens.check(n)  # Marca todas as opções para exclusão
-                    time.sleep(3)
-                    pyautogui.press("enter") # Confirma a exclusão dos arquivos                                                                                 
-                    time.sleep(3)
-                    pyautogui.press("enter") 
+                        if n == list_itens.item_count() - 1:
+                            time.sleep(3)
+                            pyautogui.press("enter") # Confirma a exclusão dos arquivos                                                                                 
+                            time.sleep(3)
+                            pyautogui.press("enter") 
                     return open
                 except Exception as e :
                     return self._erro_message(f"Erro de execução: {e}")
-        except (self.sbp.SubprocessError , self.psutil.Error ) as e :
+        except (sbp.SubprocessError , psutil.Error ) as e :
             return self._erro_message(f"Erro de iniciação do clean : {e}")
+            
             
     def delete_Temp(self):
 
         # pega o nome do usuário e do drive que o usuário está usando
-        user_name = self.os.getlogin()
-        drive_name = self.os.path.splitdrive(self.os.getcwd())[0]
+        user_name = os.getlogin()
+        drive_name = os.path.splitdrive(os.getcwd())[0]
 
         path_temp = f'{drive_name}/Users/{user_name}/AppData/Local/Temp/'
         # abre a pasta Temp do usuário logado no explorer
-        self.os.startfile(path_temp) 
+        os.startfile(path_temp) 
         # da um tempo para abrir a pasta
         time.sleep(2)
-        for filemane in self.os.listdir(path_temp):# lista os arquivos da pasta Temp
+        for filemane in os.listdir(path_temp):# lista os arquivos da pasta Temp
             try:
-                filepath = self.os.path.join(path_temp, filemane) # junta o caminho com o nome do arquivo
+                filepath = os.path.join(path_temp, filemane) # junta o caminho com o nome do arquivo
                 # verifica se é um arquivo
-                if self.os.path.isfile(filepath) or self.os.path.islink(filepath):
+                if os.path.isfile(filepath) or os.path.islink(filepath):
                     # deleta o arquivo
-                    self.os.unlink(filepath)
+                    os.unlink(filepath)
                 
                 # verifica se é um diretório
-                elif self.os.path.isdir(filepath):
+                elif os.path.isdir(filepath):
                     # deleta o diretório com tudo dentro
-                    self.shutil.rmtree(filepath)
+                    shutil.rmtree(filepath)
                 
             except Exception as e:
                 return self._erro_message(f'\nErro ao deletar o arquivo {filepath} : {e}')
