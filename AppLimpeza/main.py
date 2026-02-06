@@ -3,6 +3,7 @@ import pyautogui
 import os
 import shutil
 import psutil
+import os
 import pygetwindow as gw
 import tkinter as tk
 import subprocess as sbp
@@ -49,9 +50,10 @@ class AppCleaner:
         except Exception as e :
             return self._erro_message(f"Erro na criação da janela de mensagem: {e}")       
                 
+   
         
-        
-    def disk_clear(self):
+    def disk_clear(self ):
+        open = False
         try:
             sbp.run(["cleanmgr.exe", "/sageget:1"] , check=False)  # Abre o Disk Cleanup
             # Verifica se o Disk Cleanup está aberto
@@ -91,6 +93,7 @@ class AppCleaner:
                     return False
         except (sbp.SubprocessError , psutil.Error ) as e :
             return self._erro_message(f"Erro de iniciação do clean : {e}")
+            
             
     def delete_Temp(self):
         try:
