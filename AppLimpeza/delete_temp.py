@@ -1,7 +1,7 @@
 import os 
 import shutil
 import time
-from logs import register_logs
+
 
 def delete_Temp():
 
@@ -17,7 +17,6 @@ def delete_Temp():
     for filemane in os.listdir(path_temp):# lista os arquivos da pasta Temp
         try:
             filepath = os.path.join(path_temp, filemane) # junta o caminho com o nome do arquivo
-            print(filepath)
             # verifica se é um arquivo
             if os.path.isfile(filepath) or os.path.islink(filepath):
                 # deleta o arquivo
@@ -27,10 +26,27 @@ def delete_Temp():
             elif os.path.isdir(filepath):
                 # deleta o diretório com tudo dentro
                 shutil.rmtree(filepath)
-                
-            register_logs(f'\nArquivo-pasta {filepath} deletado com sucesso')  
             
         except Exception as e:
-                    register_logs(f'\nErro ao deletar o arquivo {filepath} : {e}')
+            return print(f'\nErro ao deletar o arquivo {filepath} : {e}')
         
         time.sleep(0.3)
+    
+    
+
+
+
+from pathlib import Path
+import shutil
+
+def delete_Temp_pro():
+    try:
+        temp_path = Path(os.getenv('TEMP'))  # Mais direto que construir manualmente
+        os.startfile(str(temp_path))
+        time.sleep(2)
+        shutil.rmtree(temp_path, ignore_errors=True)
+        print(" Temp limpa com segurança!")
+    except Exception as e:
+        print(f"Erro ao limpar a pasta Temp: {e}")
+
+delete_Temp_pro()
