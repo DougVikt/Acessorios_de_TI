@@ -1,0 +1,6 @@
+-------------------------- INSTRUÇÕES -------------------------
+
+1 - executar a instalação do 'TiClean_setup.exe' em um usuario administrador  .
+2 - e bem simples e não precisa alterar nada e so dar ok em tudo .
+3 - Para utilizar e so ir pelo menu iniciar e digitar 'ti' , escolhe e da enter , so esperar finalizar o processo 
+
