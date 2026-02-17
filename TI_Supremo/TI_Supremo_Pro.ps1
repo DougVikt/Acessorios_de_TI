@@ -651,3 +651,247 @@ function VerifyApps {
 }
 
 MainMenu
+
+
+
+# ================================= mais iteias ===============================================
+
+function CheckStartupApps {
+    Clear-Host
+    Write-Output "================================================================"
+    Write-Output "          PROGRAMAS COM INICIALIZAÇÃO AUTOMÁTICA"
+    Write-Output "================================================================"
+    Write-Output ""
+
+    try {
+        Get-CimInstance -ClassName Win32_StartupCommand | 
+            Select-Object Name, Location, Command, User |
+            Format-Table -AutoSize | Out-Host
+
+        $count = (Get-CimInstance Win32_StartupCommand).Count
+        Write-Host "Total de itens na inicialização: $count" -ForegroundColor Magenta
+    }
+    catch {
+        Write-Warning "Erro ao listar programas de inicialização: $($_.Exception.Message)"
+    }
+
+    Write-Output "`nPressione Enter para voltar..."; Read-Host
+}
+
+function OptimizeStartupApps {
+    Clear-Host
+    Write-Output "================================================================"
+    Write-Output "          OTIMIZAR INICIALIZAÇÃO (DESATIVAR ITENS)"
+    Write-Output "================================================================"
+    Write-Output ""
+    Write-Warning "Atenção: desativar itens pode afetar funcionamento de programas!"
+    Write-Output ""
+
+    try {
+        $startup = Get-CimInstance -ClassName Win32_StartupCommand | 
+            Select-Object Name, Command, Location, User, @{Name='Enabled';Expression={$true}}
+
+        $startup | Format-Table Name, Command -AutoSize | Out-Host
+
+        $choice = Read-Host "Digite o NOME exato do programa para DESATIVAR (ou ENTER para sair)"
+        if ([string]::IsNullOrWhiteSpace($choice)) { return }
+
+        $item = $startup | Where-Object { $_.Name -eq $choice }
+        if ($item) {
+            # Desativa via registro (exemplo simples - método mais comum)
+            $regPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+            if (Test-Path $regPath) {
+                Remove-ItemProperty -Path $regPath -Name $choice -ErrorAction SilentlyContinue
+                Write-Host "Item '$choice' removido da inicialização (Run)." -ForegroundColor Green
+            }
+            # Pode adicionar HKCU também...
+        } else {
+            Write-Warning "Item não encontrado."
+        }
+    }
+    catch {
+        Write-Warning "Erro: $($_.Exception.Message)"
+    }
+
+    Write-Output "`nPressione Enter..."; Read-Host
+}
+
+function CheckVulnerableApps {
+    Clear-Host
+    Write-Output "================================================================"
+    Write-Output "     VERIFICAR APLICATIVOS VULNERÁVEIS (BÁSICO)"
+    Write-Output "================================================================"
+    Write-Output ""
+    Write-Host "Não existe verificação nativa 100% confiável via PowerShell/Winget." -ForegroundColor Yellow
+    Write-Host "Sugestão: usar winget upgrade para ver versões desatualizadas." -ForegroundColor Yellow
+    Write-Output ""
+
+    if (Checking_winget) {
+        Write-Host "Executando: winget upgrade" -ForegroundColor Cyan
+        winget upgrade
+    }
+
+    Write-Output "`nRecomendações:"
+    Write-Output "• Navegadores, Adobe, Java, drivers → mantenha sempre atualizado"
+    Write-Output "• Ferramentas externas: Ninite, Patch My PC, WingetUI, vulncheck"
+
+    Write-Output "`nPressione Enter..."; Read-Host
+}
+
+function check_disk_usage {
+    Clear-Host
+    Write-Output "================================================================"
+    Write-Output "               USO DE DISCO"
+    Write-Output "================================================================"
+    
+    Get-Volume | Where-Object DriveLetter | 
+        Select DriveLetter, FileSystemLabel, @{N='UsedGB';E={[math]::Round($_.Size/1GB - $_.SizeRemaining/1GB,2)}}, 
+               @{N='FreeGB';E={[math]::Round($_.SizeRemaining/1GB,2)}}, 
+               @{N='TotalGB';E={[math]::Round($_.Size/1GB,2)}}, 
+               @{N='%Used';E={[math]::Round(($_.Size - $_.SizeRemaining)/$_.Size*100,1)}} |
+        Format-Table -AutoSize | Out-Host
+
+    Write-Output "`nPressione Enter..."; Read-Host
+}
+
+function check_memory_usage {
+    Clear-Host
+    Write-Output "================================================================"
+    Write-Output "               USO DE MEMÓRIA"
+    Write-Output "================================================================"
+
+    $os = Get-CimInstance Win32_OperatingSystem
+    $total = [math]::Round($os.TotalVisibleMemorySize / 1MB, 1)
+    $free  = [math]::Round($os.FreePhysicalMemory / 1MB, 1)
+    $used  = $total - $free
+    $perc  = [math]::Round(($used / $total) * 100, 1)
+
+    Write-Host "Total RAM.....: $total GB" -ForegroundColor Cyan
+    Write-Host "Em uso........: $used GB ($perc%)" -ForegroundColor Yellow
+    Write-Host "Livre.........: $free GB" -ForegroundColor Green
+
+    Write-Output "`nPressione Enter..."; Read-Host
+}
+
+function check_cpu_usage {
+    Clear-Host
+    Write-Output "================================================================"
+    Write-Output "               USO DE CPU (média últimos 10s)"
+    Write-Output "================================================================"
+
+    $cpu = Get-Counter '\Processor(*)\% Processor Time' -SampleInterval 2 -MaxSamples 5 |
+           Select -Expand CounterSamples |
+           Where-Object { $_.InstanceName -eq '_Total' } |
+           Measure-Object -Property CookedValue -Average
+
+    Write-Host "Uso médio CPU...: $([math]::Round($cpu.Average,1)) %" -ForegroundColor Yellow
+
+    Write-Output "`nPressione Enter..."; Read-Host
+}
+
+function clear_temp_files {
+    Clear-Host
+    Write-Output "================================================================"
+    Write-Output "          LIMPANDO PASTAS TEMPORÁRIAS"
+    Write-Output "================================================================"
+
+    $folders = @(
+        "$env:TEMP",
+        "$env:SYSTEMROOT\Temp",
+        "$env:LOCALAPPDATA\Temp"
+    )
+
+    $count = 0
+    foreach ($folder in $folders) {
+        if (Test-Path $folder) {
+            Get-ChildItem -Path $folder -Recurse -Force -ErrorAction SilentlyContinue |
+                Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+            $count++
+            Write-Host "Limpo: $folder" -ForegroundColor Green
+        }
+    }
+
+    Write-Host "`nPastas temporárias limpas: $count" -ForegroundColor Magenta
+    Write-Output "`nPressione Enter..."; Read-Host
+}
+
+function check_system_services {
+    # Você já tem uma função com nome parecido → pode renomear ou usar essa
+    Clear-Host
+    Write-Output "================================================================"
+    Write-Output "       SERVIÇOS DO SISTEMA (principais)"
+    Write-Output "================================================================"
+
+    Get-Service | Where-Object { $_.StartType -eq 'Automatic' -or $_.Status -eq 'Running' } |
+        Select Name, DisplayName, Status, StartType |
+        Format-Table -AutoSize | Out-Host
+
+    Write-Output "`nPressione Enter..."; Read-Host
+}
+
+function disk_cleanup {
+    Clear-Host
+    Write-Output "================================================================"
+    Write-Output "          EXECUTANDO LIMPEZA DE DISCO (cleanmgr)"
+    Write-Output "================================================================"
+
+    try {
+        Start-Process cleanmgr.exe -ArgumentList "/sagerun:1" -Wait
+        Write-Host "Limpeza finalizada (ou cancelada pelo usuário)." -ForegroundColor Green
+    }
+    catch {
+        Write-Warning "Erro ao executar cleanmgr: $($_.Exception.Message)"
+    }
+
+    Write-Output "`nPressione Enter..."; Read-Host
+}
+
+function fix_system_issues {
+    Clear-Host
+    Write-Output "================================================================"
+    Write-Output "     CORRIGIR PROBLEMAS BÁSICOS DO SISTEMA"
+    Write-Output "================================================================"
+
+    Write-Host "1) DISM - Verificando saúde da imagem..." -ForegroundColor Cyan
+    DISM /Online /Cleanup-Image /CheckHealth
+
+    Write-Host "`n2) DISM - Reparando imagem (pode demorar)..." -ForegroundColor Cyan
+    DISM /Online /Cleanup-Image /RestoreHealth
+
+    Write-Host "`n3) SFC - Verificando e reparando arquivos do sistema..." -ForegroundColor Cyan
+    sfc /scannow
+
+    Write-Output "`nFinalizado. Verifique mensagens acima." -ForegroundColor Magenta
+    Write-Output "Pressione Enter..."; Read-Host
+}
+
+function check_system_integrity {
+    Clear-Host
+    Write-Output "================================================================"
+    Write-Output "     VERIFICAR INTEGRIDADE DO SISTEMA"
+    Write-Output "================================================================"
+
+    Write-Host "Executando SFC /scannow (verificação)..." -ForegroundColor Cyan
+    sfc /scannow
+
+    Write-Output "`nPressione Enter..."; Read-Host
+}
+
+function restore_system_integrity {
+    Clear-Host
+    Write-Output "================================================================"
+    Write-Output "     RESTAURAR INTEGRIDADE DO SISTEMA"
+    Write-Output "================================================================"
+
+    Write-Host "Etapa 1/2 - DISM RestoreHealth..." -ForegroundColor Cyan
+    DISM /Online /Cleanup-Image /RestoreHealth
+
+    Write-Host "`nEtapa 2/2 - SFC /scannow..." -ForegroundColor Cyan
+    sfc /scannow
+
+    Write-Output "`nProcesso concluído." -ForegroundColor Green
+    Write-Output "Pressione Enter..."; Read-Host
+}
+
+
+
