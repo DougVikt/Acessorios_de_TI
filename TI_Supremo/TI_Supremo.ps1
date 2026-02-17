@@ -388,7 +388,7 @@ function UpdateUnistallApps {
             $failed += $appName
         }
         Start-Sleep -Seconds 2  # Pequena pausa visual
-}
+ }
 
     # ---------- Resumo ----------
     Write-Host "`n=== RESUMO ===" -ForegroundColor Magenta
